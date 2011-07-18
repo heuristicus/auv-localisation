@@ -1,6 +1,7 @@
 #!/bin/python
+from sympy import intersection
 from sympy.geometry import Line, Point
-from math import sqrt, cos, sin
+from math import sqrt, cos, sin, radians
 
 class particle:
 
@@ -25,17 +26,25 @@ class sonar:
     def get_ranges(self):
         angle_swept = 0
         while angle_swept < self.angle_range:
-            return point_distance(self.loc, intersect_point)
+            scan_line = self.get_scan_line()
+            print scan_line
+            intersect_point = self.get_intersect_point(scan_line)
+            distance = self.point_distance(self.loc, intersect_point)
+            self.ranges.append(distance)
             angle_swept += self.step
             self.current_angle += self.step
 
-    def get_intersect_point(self):
+    def get_intersect_point(self, scan_line):
+        # Return the first intersection point found on the line
         for line in self.map.lines:
-            print line
+            i = intersection(scan_line, line)
+            print i
+            if i:
+                return i
 
     def point_distance(self, p1, p2):
         # multiply distance by 10 since each 1 represents 10cm
-        dist = 10 * sqrt(pow(p1[0]-p2[0], 2) + pow((p1[1]-p2[1]), 2))
+        dist = 10 * sqrt(pow(p1[0]-p2[0], 2) + pow(p1[1]-p2[1], 2))
         if self.min_range < dist < self.max_range:
             # pretend that we can't resolve distances farther than the
             # sonar's range, and closer than a certain distance.
@@ -44,12 +53,14 @@ class sonar:
             return dist
 
     def get_scan_line(self):
-        return Line(self.loc, point_at_angle(self.current_angle))
+        end_point = self.point_at_angle(self.current_angle)
+        print end_point
+        return Line(self.loc, end_point)
 
     def point_at_angle(self, degrees):
         # (x', y') = (x + r cos a, y + r sin a)
         # x,y = centre point, r = radius, a = angle
-        return Point(self.loc[0] + (self.rng * cos(degrees), self.loc[1] + (self.rng * cos(degrees))))
+        return Point(self.loc[0] + (self.max_range * cos(radians(degrees))), self.loc[1] + (self.max_range * sin(radians(degrees))))
 
 class map_:
     # For the purposes of the simulation, each increment of 1 in the
