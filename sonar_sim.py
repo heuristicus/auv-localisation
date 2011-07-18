@@ -26,8 +26,8 @@ class sonar:
     def get_ranges(self):
         angle_swept = 0
         while angle_swept < self.angle_range:
+            print 'new sonar ping'
             scan_line = self.get_scan_line()
-            print scan_line
             intersect_point = self.get_intersect_point(scan_line)
             distance = self.point_distance(self.loc, intersect_point)
             self.ranges.append(distance)
@@ -37,14 +37,15 @@ class sonar:
     def get_intersect_point(self, scan_line):
         # Return the first intersection point found on the line
         for line in self.map.lines:
+            print 'intersection check'
             i = intersection(scan_line, line)
             print i
             if i:
                 return i
 
-    def point_distance(self, p1, p2):
+    def point_distance(self, sonar_loc, intersect):
         # multiply distance by 10 since each 1 represents 10cm
-        dist = 10 * sqrt(pow(p1[0]-p2[0], 2) + pow(p1[1]-p2[1], 2))
+        dist = 10 * sqrt(pow(sonar_loc[0]-intersect[0], 2) + pow(sonar_loc[1]-intersect[1], 2))
         if self.min_range < dist < self.max_range:
             # pretend that we can't resolve distances farther than the
             # sonar's range, and closer than a certain distance.
@@ -54,7 +55,7 @@ class sonar:
 
     def get_scan_line(self):
         end_point = self.point_at_angle(self.current_angle)
-        print end_point
+        #print end_point
         return Line(self.loc, end_point)
 
     def point_at_angle(self, degrees):
