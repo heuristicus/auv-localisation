@@ -1,5 +1,6 @@
 #!/bin/python
 from sympy.geometry import Line, Point
+from math import sqrt, cos, sin
 
 class particle:
 
@@ -11,8 +12,8 @@ class particle:
 class sonar:
 
     def __init__(self, rng, step, loc, map_):
-        self.distances = [] # Distances to objects in the map on previous pulse
-        self.range = rng # Range of the sonar pulse in cm
+        self.ranges = [] # Distances to objects in the map on previous pulse
+        self.range = rng # Maximum range of the sonar pulse in cm
         self.step = step # Angle moved by the sonar head between each pulse
         self.angle_range = 270 # Total angle that the sonar sweeps through
         self.initial_angle = 225 # Where the first pulse is directed from
@@ -22,14 +23,17 @@ class sonar:
 
     def get_ranges(self):
         angle_swept = 0
-        while angle_swept < angle_range:
-            
+        while angle_swept < self.angle_range:
+            return point_distange(self.loc, point_at_angle)
             angle_swept += self.step
+
+    def point_distance(self, p1, p2):
+        return sqrt(pow(p1[0]-p2[0], 2) + pow((p1[1]-p2[1]), 2))
 
     def point_at_angle(self, degrees):
         # (x', y') = (x + r cos a, y + r sin a)
         # x,y = centre point, r = radius, a = angle
-        return Point(self.loc[0] + (self.rng * math.cos(degrees), self.loc[1] + (self.rng * math.cos(degrees))
+        return Point(self.loc[0] + (self.rng * cos(degrees), self.loc[1] + (self.rng * cos(degrees))))
 
 class map_:
     # For the purposes of the simulation, each increment of 1 in the
@@ -50,12 +54,11 @@ class map_:
         self.lines.append(line)
 
 if __name__ == '__main__':
-    print 'not implemented yet.'
     simple_map = map_()
     simple_map.add_line(Line(Point(2,2), Point(2,40)))
     simple_map.add_line(Line(Point(2,2), Point(40,2)))
     simple_map.add_line(Line(Point(40,2), Point(40,40)))
-    sonar = sonar()
-                                    
-           
+    sonar = sonar(50, 5, Point(20,20), simple_map)
+    print sonar.point_distance(Point(5,10), Point(20,40))
+    #sonar.get_ranges()
     
