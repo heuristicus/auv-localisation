@@ -1,9 +1,7 @@
 #!/bin/python
-from sympy import intersection
-from sympy.geometry import Segment, Point
 from math import sqrt, cos, sin, radians
 from shapely import *
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point
 from Tkinter import *
 import time
 
@@ -26,7 +24,7 @@ class sonar:
         self.angle_range = 270 # Total angle that the sonar sweeps through
         self.initial_angle = 0 # Where the first pulse is directed from
         self.map = map_ # Map to use the sonar in
-        self.loc = loc # The starting position of the sonar in the map in computer coords
+        self.loc = loc # The position of the sonar in the map in computer coords
         self.current_angle = self.initial_angle
 
     def reset(self):
@@ -38,31 +36,52 @@ class sonar:
     def get_ranges(self):
         self.reset()
         for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
-            #print self.current_angle
+            #print 'new scan'
             if self.current_angle > self.initial_angle + self.angle_range:
                 break
             ln = self.get_scan_line()
             intersect = self.get_intersect_point(ln)
+            dist = self.point_distance(intersect)
+            self.ranges.append(dist)
             self.current_angle += self.step
 
     def get_intersect_point(self, scan_line):
+        # This will need to be fixed to make sure that only the point
+        # closest to the sonar is returned when the same scan line
+        # intersects two different map lines.
         for line in self.map.lines:
-            print 'y'
-            #print line, scan_line
-            #print intersection(line, scan_line)
+            x = scan_line.intersection(line)
+            #print x
+            if x:
+                self.intersection_points.append(list(x.coords))
+                return x
 
-    def point_distance(self, sonar_loc, intersect):
-        print 'not implemented'
+        #print 'No intersection'
+        self.intersection_points.append(None)
+        return None
+
+    def point_distance(self, intersect):
+        if not intersect:
+            #print 'no intersection point to check distance to'
+            return -1
+        else:
+            dist = intersect.distance(self.loc)
+            #print 'distance is %d'%(dist)
+            if self.min_range < dist < self.max_range:
+                return dist
+            else:
+                #print 'Distance not within tolerated range.'
+                return -1
 
     def get_scan_line(self):
-        ln = Segment(Point(self.loc[0],self.loc[1]), self.point_at_angle(self.current_angle))
+        ln = LineString([(self.loc.x,self.loc.y), self.point_at_angle(self.current_angle)])
         self.scan_lines.append(ln)
         return ln
        
     def point_at_angle(self, degrees):
         # (x', y') = (x + r cos a, y + r sin a)
         # x,y = centre point, r = radius, a = angle
-        return Point(self.loc[0] + (self.max_range * cos(radians(degrees))), self.loc[1] + (self.max_range * sin(radians(degrees))))
+        return (self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
 
 class map_:
     # For the purposes of the simulation, each increment of 1 in the
@@ -106,40 +125,24 @@ def scan_line_test():
     w.mainloop()
 
 def draw_line(canvas, line):
-    canvas.create_line(line[0][0], line[0][1], line[1][0], line[1][1])
+    c = line.coords
+    canvas.create_line(c[0][0], c[0][1], c[1][0], c[1][1])
 
 def draw_point(canvas, point):
     canvas.create_oval(point[0], point[1], point[0] + 2, point[1] + 2)
 
 if __name__ == '__main__':
     simple_map = map_()
-    simple_map.add_line(Segment(Point(2,2), Point(2,40)))
-    simple_map.add_line(Segment(Point(2,2), Point(40,2)))
-    simple_map.add_line(Segment(Point(40,2), Point(40,40)))
-    simple_map.add_line(Segment(Point(2,40), Point(40,40)))
+    simple_map.add_line(LineString([(2,2),(2,40)]))
+    simple_map.add_line(LineString([(2,2),(40,2)]))
+    simple_map.add_line(LineString([(40,2),(40,40)]))
+    simple_map.add_line(LineString([(2,40),(40,40)]))
+                    
     sonar = sonar(50, 25, Point(20,20), simple_map)
-    
+
     sonar.get_ranges()
-    
-    a = LineString([(2,2),(2,40)])
-    b = LineString([(2,2),(40,2)])
-    c = LineString([(40,2),(40,40)])
-    d = LineString([(2,40),(40,40)])
-    
-    lines = [a,b,c,d]
-    ed = []
-    for s_line in sonar.scan_lines:
-        ed.append(LineString([(s_line[0][0], s_line[0][1]),(s_line[1][0], s_line[1][1])]))
-
-    for e in ed:
-        print 'new line'
-        for line in lines:
-            print e.intersection(line)
-
-
-    #master = Tk()
-    #w = Canvas(master)
-    #w.pack()
-    for point in sonar.intersection_points:
-        print point
-#    w.mainloop()
+    #print sonar.intersection_points
+    #print sonar.scan_lines
+    #print sonar.ranges
+    #scan_line_test()
+    #angle_point_test(0,10)
