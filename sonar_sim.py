@@ -124,12 +124,24 @@ def scan_line_test():
         draw_line(w, line)
     w.mainloop()
 
+def intersection_point_test():
+    sonar.get_ranges()
+    master = Tk()
+    w = Canvas(master)
+    w.pack()
+    for line in sonar.scan_lines:
+        draw_line(w,line)
+    for pt in sonar.intersection_points:
+        draw_point(w,pt)
+    w.mainloop()
+
 def draw_line(canvas, line):
     c = line.coords
     canvas.create_line(c[0][0], c[0][1], c[1][0], c[1][1])
 
 def draw_point(canvas, point):
-    canvas.create_oval(point[0], point[1], point[0] + 2, point[1] + 2)
+    pt = point[0]
+    canvas.create_oval(pt[0], pt[1], pt[0] + 2, pt[1] + 2)
 
 if __name__ == '__main__':
     simple_map = map_()
@@ -140,9 +152,9 @@ if __name__ == '__main__':
                     
     sonar = sonar(50, 25, Point(20,20), simple_map)
 
-    sonar.get_ranges()
-    #print sonar.intersection_points
+    intersection_point_test()
+    #print sonar.intersection_pts
     #print sonar.scan_lines
     #print sonar.ranges
     #scan_line_test()
-    #angle_point_test(0,10)
+    #angle_pt_test(0,10)
