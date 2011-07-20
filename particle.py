@@ -10,7 +10,7 @@ def distribute(number, loc):
     global particles
     particles = []
     for i in range(number):
-        make_particle(loc, 40)
+        particles.append(make_particle(loc, 40))
 
     print particles
 
@@ -20,7 +20,8 @@ def make_particle(loc, var):
 
     if xval > 0 and yval > 0:
         return Particle(xval, yval, gen_wt())
-
+    else:
+        return make_particle(loc,var)
 
 def gen_wt():
     # not sure what to do here yet - maybe proportional to the
