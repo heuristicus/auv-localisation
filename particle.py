@@ -10,9 +10,22 @@ def distribute(number, loc):
     global particles
     particles = []
     for i in range(number):
-        particles.append(Particle(random.gauss(loc[0], 40), random.gauss(loc[1], 40), 0))
+        make_particle(loc, 40)
 
     print particles
+
+def make_particle(loc, var):
+    xval = random.gauss(loc[0], var)
+    yval = random.gauss(loc[1], var)
+
+    if xval > 0 and yval > 0:
+        return Particle(xval, yval, gen_wt())
+
+
+def gen_wt():
+    # not sure what to do here yet - maybe proportional to the
+    # proximity to the location?
+    return 0
 
 class Particle:
     
