@@ -1,4 +1,4 @@
-#!/bin/python
+#!usr/bin/python
 from math import sqrt, cos, sin, radians
 from shapely import *
 from shapely.geometry import LineString, Point
@@ -48,7 +48,7 @@ class sonar:
             x = scan_line.intersection(line)
             #print x
             if x:
-                self.intersection_points.append(list(x.coords))
+                self.intersection_points.append(x)
                 return x
 
         #print 'No intersection'
@@ -69,14 +69,15 @@ class sonar:
                 return -1
 
     def get_scan_line(self):
-        ln = LineString([(self.loc.x,self.loc.y), self.point_at_angle(self.current_angle)])
+        pt = self.point_at_angle(self.current_angle)
+        ln = LineString([self.loc.coords[0], pt.coords[0]])
         self.scan_lines.append(ln)
         return ln
        
     def point_at_angle(self, degrees):
         # (x', y') = (x + r cos a, y + r sin a)
         # x,y = centre point, r = radius, a = angle
-        return (self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
+        return Point(self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
 
 class map_:
     # For the purposes of the simulation, each increment of 1 in the
@@ -125,6 +126,7 @@ def intersection_point_test():
     for line in sonar.scan_lines:
         draw_line(canvas,line)
     for pt in sonar.intersection_points:
+        print pt
         draw_point(canvas,pt)
     simple_map.draw(canvas)
     canvas.mainloop()
@@ -135,13 +137,20 @@ def create_canvas():
     canvas = Canvas(master)
     canvas.pack()
 
+def draw_circle_from_centre(canvas, radius, centre):
+    # probably the wrong way around, technically, but since it's a
+    # circle it makes no difference really.
+    tl = Point(centre.x - radius, centre.y + radius)
+    br = Point(centre.x + radius, centre.y - radius)
+    canvas.create_oval(tl.x, tl.y, br.x, br.y)
+
 def draw_line(canvas, line):
     c = line.coords
     canvas.create_line(c[0][0], c[0][1], c[1][0], c[1][1])
 
 def draw_point(canvas, point):
-    pt = point[0]
-    canvas.create_oval(pt[0], pt[1], pt[0] + 2, pt[1] + 2)
+    pt = point
+    canvas.create_oval(pt.x, pt.y, pt.x + 2, pt.y + 2)
 
 if __name__ == '__main__':
     simple_map = map_()
@@ -151,8 +160,10 @@ if __name__ == '__main__':
     simple_map.add_line(LineString([(2,40),(40,40)]))
                         
     sonar = sonar(50, 25, Point(20,20), simple_map)
-        
-    intersection_point_test()
+    #sonar.point_at_angle(50)
+    create_canvas()
+    draw_circle_from_centre(canvas, 50, Point(10,30))
+    #intersection_point_test()
     #print sonar.intersection_pts
     #print sonar.scan_lines
     #print sonar.ranges
