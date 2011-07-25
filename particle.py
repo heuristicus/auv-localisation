@@ -10,7 +10,7 @@ def distribute(number, loc):
     global particles
     particles = []
     for i in range(number):
-        particles.append(make_particle(loc, 40))
+        particles.append(make_particle(loc, 15))
 
     print particles
 
@@ -24,7 +24,7 @@ def make_particle(loc, var):
         return make_particle(loc,var)
 
 def gen_wt():
-    # not sure what to do here yet - maybe proportional to the
+    # not sure what to do here yet - maybe inversely proportional to the
     # proximity to the location?
     return 0
 
@@ -36,7 +36,7 @@ class Particle:
         self.wt = wt # weight
 
     def __repr__(self):
-        return "(%d, %d)"%(self.x,self.y)
+        return "(%d, %d)"%(self.x, self.y)
 
 if __name__ == '__main__':
     distribute(300, [50,50])
@@ -44,5 +44,5 @@ if __name__ == '__main__':
     c = Canvas(m)
     c.pack()
     for particle in particles:
-        c.create_oval(particle.x, particle.y, particle.x+2, particle.y +2)
+        c.create_oval(particle.x, particle.y, particle.x + 2, particle.y + 2)
     c.mainloop()

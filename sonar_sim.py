@@ -5,12 +5,7 @@ from shapely.geometry import LineString, Point
 from Tkinter import *
 import time
 
-class particle:
-
-    def __init__(self):
-        self.loc = (0,0)
-        self.wt = 0
-        
+global canvas
 
 class sonar:
 
@@ -101,39 +96,44 @@ class map_:
     def add_line(self, line):
         self.lines.append(line)
 
+    def draw(self, canvas):
+        for line in self.lines:
+            draw_line(canvas, line)
+
 def angle_point_test(start, step):
-    master = Tk()
-    w = Canvas(master)
-    w.pack()
+    create_canvas()
     start_angle = start
     pt = sonar.point_at_angle(start_angle)
-    w.create_oval(pt[0], pt[1], pt[0] + 2, pt[1] + 2, fill='red')
+    canvas.create_oval(pt[0], pt[1], pt[0] + 2, pt[1] + 2, fill='red')
     for i in [x * step for x in map(lambda x:x+1, range(360/step))]:
         if i > 265:
             break
         pt = sonar.point_at_angle(start_angle+i)
-        draw_point(w, pt)
-    w.mainloop()
+        draw_point(canvas, pt)
+    canvas.mainloop()
 
 def scan_line_test():
     sonar.get_ranges()
-    master = Tk()
-    w = Canvas(master)
-    w.pack()
+    create_canvas()
     for line in sonar.scan_lines:
-        draw_line(w, line)
-    w.mainloop()
+        draw_line(canvas, line)
+    canvas.mainloop()
 
 def intersection_point_test():
     sonar.get_ranges()
-    master = Tk()
-    w = Canvas(master)
-    w.pack()
+    create_canvas()
     for line in sonar.scan_lines:
-        draw_line(w,line)
+        draw_line(canvas,line)
     for pt in sonar.intersection_points:
-        draw_point(w,pt)
-    w.mainloop()
+        draw_point(canvas,pt)
+    simple_map.draw(canvas)
+    canvas.mainloop()
+
+def create_canvas():
+    global canvas
+    master = Tk()
+    canvas = Canvas(master)
+    canvas.pack()
 
 def draw_line(canvas, line):
     c = line.coords
@@ -149,9 +149,9 @@ if __name__ == '__main__':
     simple_map.add_line(LineString([(2,2),(40,2)]))
     simple_map.add_line(LineString([(40,2),(40,40)]))
     simple_map.add_line(LineString([(2,40),(40,40)]))
-                    
+                        
     sonar = sonar(50, 25, Point(20,20), simple_map)
-
+        
     intersection_point_test()
     #print sonar.intersection_pts
     #print sonar.scan_lines
