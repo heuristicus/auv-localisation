@@ -16,8 +16,12 @@ class sonar:
         self.max_range = rng # Maximum range of the sonar pulse in cm
         self.min_range = 4
         self.step = step # Angle moved by the sonar head between each pulse
-        self.angle_range = 270 # Total angle that the sonar sweeps through
-        self.initial_angle = 0 # Where the first pulse is directed from
+        self.angle_range = 270 # Total angle that the sonar sweeps through 
+
+        # Where the first pulse is directed from. Sonar
+        # initialised so that the first pulse travels from -125, where
+        # up is 0.
+        self.initial_angle = 145
         self.map = map_ # Map to use the sonar in
         self.loc = loc # The position of the sonar in the map in computer coords
         self.current_angle = self.initial_angle
@@ -126,7 +130,6 @@ def intersection_point_test():
     for line in sonar.scan_lines:
         draw_line(canvas,line)
     for pt in sonar.intersection_points:
-        print pt
         draw_point(canvas,pt)
     simple_map.draw(canvas)
     canvas.mainloop()
@@ -150,7 +153,7 @@ def draw_line(canvas, line):
 
 def draw_point(canvas, point):
     pt = point
-    canvas.create_oval(pt.x, pt.y, pt.x + 2, pt.y + 2)
+    canvas.create_oval(pt.x - 1, pt.y - 1, pt.x + 1, pt.y + 1)
 
 if __name__ == '__main__':
     simple_map = map_()
@@ -161,9 +164,9 @@ if __name__ == '__main__':
                         
     sonar = sonar(50, 25, Point(20,20), simple_map)
     #sonar.point_at_angle(50)
-    create_canvas()
-    draw_circle_from_centre(canvas, 50, Point(10,30))
-    #intersection_point_test()
+    #create_canvas()
+    #draw_circle_from_centre(canvas, 50, Point(10,30))
+    intersection_point_test()
     #print sonar.intersection_pts
     #print sonar.scan_lines
     #print sonar.ranges
