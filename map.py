@@ -21,3 +21,6 @@ class map_:
     def draw(self, canvas):
         for line in self.lines:
             draw_line(canvas, line)
+
+    def load_map_from_file(self, filename):
+        print 'not implemented'
