@@ -2,14 +2,29 @@
 from math import sqrt, cos, sin, radians
 from shapely import *
 from shapely.geometry import LineString, Point
-from Tkinter import *
+from Tkinter import Tk, Canvas
 import time
 
 global canvas
 
+class gui():
+
+    def __init__(self, sonar):
+        self.tk = Tk()
+        self.sonar = sonar
+        self.tk.after_idle(self.test)
+
+    def test(self):
+        print 'bang'
+        self.tk.after(200, self.test2)
+        
+    def test2(self):
+        print 'boom'
+        self.tk.after(200, self.test)
+
 class sonar:
 
-    def __init__(self, rng, step, loc, map_, move_points):
+    def __init__(self, rng, step, start_loc, map_, move_points):
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
@@ -134,7 +149,6 @@ def intersection_point_test():
     for pt in sonar.intersection_points:
         draw_point(canvas,pt)
     simple_map.draw(canvas)
-    self.after(2, scan_line_test())
     canvas.mainloop()
 
 def create_canvas():
@@ -165,7 +179,8 @@ if __name__ == '__main__':
     simple_map.add_line(LineString([(40,2),(40,40)]))
     simple_map.add_line(LineString([(2,40),(40,40)]))
                         
-    sonar = sonar(50, 25, Point(20,20), simple_map)
+    sonar = sonar(50, 25, Point(20,20), simple_map, [])
+    gui(sonar)
     #sonar.point_at_angle(50)
     #create_canvas()
     #draw_circle_from_centre(canvas, 50, Point(10,30))
