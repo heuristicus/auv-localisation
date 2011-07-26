@@ -3,9 +3,7 @@ from math import sqrt, cos, sin, radians
 from shapely import *
 from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
-import random
-import map_rep
-import gui
+import random, map_rep, gui, sys
 
 global canvas
 
@@ -107,6 +105,6 @@ if __name__ == '__main__':
     #simple_map.add_line(LineString([(2,2),(40,2)]))
     #simple_map.add_line(LineString([(40,2),(40,40)]))
     #simple_map.add_line(LineString([(2,40),(40,40)]))
-    simple_map = map_rep.map_('z.map')
+    simple_map = map_rep.map_(sys.argv[1])
     sonar = sonar(50, 25, simple_map, [])
     ab = gui.gui(sonar)
