@@ -7,24 +7,36 @@ import time
 
 global canvas
 
-class gui():
+class gui:
 
     def __init__(self, sonar):
         self.tk = Tk()
+        self.canvas = Canvas(self.tk)
+        self.canvas.pack()
         self.sonar = sonar
-        self.tk.after_idle(self.test)
-
-    def test(self):
-        print 'bang'
-        self.tk.after(200, self.test2)
+        self.tk.after(20,self.redraw)
+        self.tk.mainloop()
         
-    def test2(self):
-        print 'boom'
-        self.tk.after(200, self.test)
+    def redraw(self):
+        print 'redraw'
+        self.draw_sonar_data()
+        self.draw_map()
+        self.tk.after(1000, self.redraw)
+        
+    def draw_sonar_data(self):
+        print 'data'
+        for line in sonar.scan_lines:
+            draw_line(self.canvas, line)
 
+    def draw_map(self):
+        print 'map'
+        sonar.map.draw(self.canvas)
+        
+    
 class sonar:
 
     def __init__(self, rng, step, start_loc, map_, move_points):
+        print 'Sonar initialised.'
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
@@ -50,6 +62,7 @@ class sonar:
         self.current_angle = self.initial_angle
         
     def get_ranges(self):
+        print 'Getting ranges'
         self.reset()
         for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
             #print 'new scan'
@@ -60,6 +73,7 @@ class sonar:
             dist = self.intersect_distance(intersect)
             self.ranges.append(dist)
             self.current_angle += self.step
+        print 'Finished getting ranges.'
 
     def get_intersect_point(self, scan_line):
         # This will need to be fixed to make sure that only the point
@@ -122,41 +136,6 @@ class map_:
         for line in self.lines:
             draw_line(canvas, line)
 
-def angle_point_test(start, step):
-    create_canvas()
-    start_angle = start
-    pt = sonar.point_at_angle(start_angle)
-    canvas.create_oval(pt[0], pt[1], pt[0] + 2, pt[1] + 2, fill='red')
-    for i in [x * step for x in map(lambda x:x+1, range(360/step))]:
-        if i > 265:
-            break
-        pt = sonar.point_at_angle(start_angle+i)
-        draw_point(canvas, pt)
-    canvas.mainloop()
-
-def scan_line_test():
-    sonar.get_ranges()
-    create_canvas()
-    for line in sonar.scan_lines:
-        draw_line(canvas, line)
-    canvas.mainloop()
-
-def intersection_point_test():
-    sonar.get_ranges()
-    create_canvas()
-    for line in sonar.scan_lines:
-        draw_line(canvas,line)
-    for pt in sonar.intersection_points:
-        draw_point(canvas,pt)
-    simple_map.draw(canvas)
-    canvas.mainloop()
-
-def create_canvas():
-    global canvas
-    master = Tk()
-    canvas = Canvas(master)
-    canvas.pack()
-
 def draw_circle_from_centre(canvas, radius, centre):
     # probably the wrong way around, technically, but since it's a
     # circle it makes no difference really.
@@ -180,13 +159,4 @@ if __name__ == '__main__':
     simple_map.add_line(LineString([(2,40),(40,40)]))
                         
     sonar = sonar(50, 25, Point(20,20), simple_map, [])
-    gui(sonar)
-    #sonar.point_at_angle(50)
-    #create_canvas()
-    #draw_circle_from_centre(canvas, 50, Point(10,30))
-    intersection_point_test()
-    #print sonar.intersection_pts
-    #print sonar.scan_lines
-    #print sonar.ranges
-    #scan_line_test()
-    #angle_pt_test(0,10)
+    ab = gui(sonar)
