@@ -3,7 +3,7 @@ from math import sqrt, cos, sin, radians
 from shapely import *
 from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
-import time
+import random
 
 global canvas
 
@@ -21,6 +21,8 @@ class gui:
         print 'redraw'
         self.draw_sonar_data()
         self.draw_map()
+        self.sonar.move_to_random(int(self.canvas.cget('height')), int(self.canvas.cget('width')))
+        self.sonar.get_ranges()
         self.tk.after(1000, self.redraw)
         
     def draw_sonar_data(self):
@@ -60,6 +62,16 @@ class sonar:
         self.scan_lines = []
         self.intersection_points = []
         self.current_angle = self.initial_angle
+
+    def move_to(self, loc, rot):
+        """Moves the sonar to a specified location with the specified
+        rotation applied. The rotation is assumed to be a new setting
+        and not an increment on the current rotation."""
+        self.loc = loc
+        self.initial_angle = rot
+
+    def move_to_random(self, height, width):
+        self.move_to(Point(random.randint(0, width), random.randint(0, height)), random.randint(0,360))
         
     def get_ranges(self):
         print 'Getting ranges'
