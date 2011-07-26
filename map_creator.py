@@ -6,9 +6,7 @@ from Tkinter import *
 
 def init():
     global point_list
-    global click_count # messy, but whatever
     point_list = []
-    click_count = 0
     create_canvas()
    
 def create_map():
@@ -24,10 +22,9 @@ def create_canvas():
     canvas.mainloop()
 
 def m1down(event):
-    global click_count
-    click_count = 0 if click_count == 1 else 1
     point_list.extend([event.x, event.y])
-    print point_list, click_count
+    if len(point_list) % 4 is 0:
+        canvas.create_line(*point_list[-4:])
 
 if __name__ == '__main__':
     init()
