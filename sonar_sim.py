@@ -7,37 +7,9 @@ import random
 
 global canvas
 
-class gui:
-
-    def __init__(self, sonar):
-        self.tk = Tk()
-        self.canvas = Canvas(self.tk)
-        self.canvas.pack()
-        self.sonar = sonar
-        self.tk.after(20,self.redraw)
-        self.tk.mainloop()
-        
-    def redraw(self):
-        print 'redraw'
-        self.draw_sonar_data()
-        self.draw_map()
-        self.sonar.move_to_random(int(self.canvas.cget('height')), int(self.canvas.cget('width')))
-        self.sonar.get_ranges()
-        self.tk.after(1000, self.redraw)
-        
-    def draw_sonar_data(self):
-        print 'data'
-        for line in sonar.scan_lines:
-            draw_line(self.canvas, line)
-
-    def draw_map(self):
-        print 'map'
-        sonar.map.draw(self.canvas)
-        
-    
 class sonar:
 
-    def __init__(self, rng, step, start_loc, map_, move_points):
+    def __init__(self, rng, step, x, y, map_, move_points):
         print 'Sonar initialised.'
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
@@ -53,8 +25,8 @@ class sonar:
         # up is 0.
         self.initial_angle = 145
         self.map = map_ # Map to use the sonar in
-        self.start_loc = start_loc # Starting location of the sonar in the map
-        self.loc = start_loc # Current location of the sonar in the map
+        self.start_loc = Point(x, y) # Starting location of the sonar in the map
+        self.loc = self.start_loc # Current location of the sonar in the map
         self.current_angle = self.initial_angle
 
     def reset(self):
@@ -63,12 +35,12 @@ class sonar:
         self.intersection_points = []
         self.current_angle = self.initial_angle
 
-    def move_to(self, loc, rot):
+    def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
         and not an increment on the current rotation."""
         self.loc = loc
-        self.initial_angle = rot
+        self.initial_angle = rotation
 
     def move_to_random(self, height, width):
         self.move_to(Point(random.randint(0, width), random.randint(0, height)), random.randint(0,360))
@@ -125,43 +97,6 @@ class sonar:
         # (x', y') = (x + r cos a, y + r sin a)
         # x,y = centre point, r = radius, a = angle
         return Point(self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
-
-class map_:
-    # For the purposes of the simulation, each increment of 1 in the
-    # coordinate space represents 10cm. i.e. (20,5) is 2m from the
-    # origin in the x direction and 50cm from the origin in the y
-    # direction.
-
-    def __init__(self):
-        self.lines = []
-    
-    def __repr__(self):
-        rep = ""
-        for line in self.lines:
-            rep += str(line) + "\n"
-        return rep
-        
-    def add_line(self, line):
-        self.lines.append(line)
-
-    def draw(self, canvas):
-        for line in self.lines:
-            draw_line(canvas, line)
-
-def draw_circle_from_centre(canvas, radius, centre):
-    # probably the wrong way around, technically, but since it's a
-    # circle it makes no difference really.
-    tl = Point(centre.x - radius, centre.y + radius)
-    br = Point(centre.x + radius, centre.y - radius)
-    canvas.create_oval(tl.x, tl.y, br.x, br.y)
-
-def draw_line(canvas, line):
-    c = line.coords
-    canvas.create_line(c[0][0], c[0][1], c[1][0], c[1][1])
-
-def draw_point(canvas, point):
-    pt = point
-    canvas.create_oval(pt.x - 1, pt.y - 1, pt.x + 1, pt.y + 1)
 
 if __name__ == '__main__':
     simple_map = map_()
