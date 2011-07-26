@@ -4,12 +4,14 @@ from shapely import *
 from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
 import random
+import map_rep
+import gui
 
 global canvas
 
 class sonar:
 
-    def __init__(self, rng, step, x, y, map_, move_points):
+    def __init__(self, rng, step, map_, move_points):
         print 'Sonar initialised.'
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
@@ -25,7 +27,8 @@ class sonar:
         # up is 0.
         self.initial_angle = 145
         self.map = map_ # Map to use the sonar in
-        self.start_loc = Point(x, y) # Starting location of the sonar in the map
+        p = map_.get_sonar_pos()
+        self.start_loc = Point(p[0], p[1]) # Starting location of the sonar in the map
         self.loc = self.start_loc # Current location of the sonar in the map
         self.current_angle = self.initial_angle
 
@@ -99,11 +102,11 @@ class sonar:
         return Point(self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
 
 if __name__ == '__main__':
-    simple_map = map_()
-    simple_map.add_line(LineString([(2,2),(2,40)]))
-    simple_map.add_line(LineString([(2,2),(40,2)]))
-    simple_map.add_line(LineString([(40,2),(40,40)]))
-    simple_map.add_line(LineString([(2,40),(40,40)]))
-                        
-    sonar = sonar(50, 25, Point(20,20), simple_map, [])
-    ab = gui(sonar)
+    #simple_map = map_()
+    #simple_map.add_line(LineString([(2,2),(2,40)]))
+    #simple_map.add_line(LineString([(2,2),(40,2)]))
+    #simple_map.add_line(LineString([(40,2),(40,40)]))
+    #simple_map.add_line(LineString([(2,40),(40,40)]))
+    simple_map = map_rep.map_('z.map')
+    sonar = sonar(50, 25, simple_map, [])
+    ab = gui.gui(sonar)

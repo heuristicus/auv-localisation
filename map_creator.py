@@ -3,6 +3,7 @@ import os
 import sys
 from Tkinter import *
 import tkFileDialog
+import tkMessageBox
 
 
 def init():
@@ -10,7 +11,7 @@ def init():
     global sonar_pos
     global pos_flag
     point_list = []
-    sonar_pos = (0,0)
+    sonar_pos = None
     pos_flag = 0
     create_canvas()
    
@@ -32,9 +33,12 @@ def set_sonar_pos():
     pos_flag = 1
 
 def save_to_file():
+    if not sonar_pos:
+        tkMessageBox.showwarning("Error", "You must define a sonar location for the map.")
+        return
     f = tkFileDialog.asksaveasfile(defaultextension='.map')
+    f.write('%d %d '%(sonar_pos))
     for val in point_list:
-        print val
         f.write(str(val) + ' ')
     f.close()
 
