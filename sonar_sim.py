@@ -9,10 +9,11 @@ global canvas
 
 class sonar:
 
-    def __init__(self, rng, step, loc, map_):
+    def __init__(self, rng, step, loc, map_, move_points):
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
+        self.move_points = move_points # tuples containing a point location and angle of the sonar.
         self.max_range = rng # Maximum range of the sonar pulse in cm
         self.min_range = 4
         self.step = step # Angle moved by the sonar head between each pulse
@@ -23,7 +24,8 @@ class sonar:
         # up is 0.
         self.initial_angle = 145
         self.map = map_ # Map to use the sonar in
-        self.loc = loc # The position of the sonar in the map in computer coords
+        self.start_loc = start_loc # Starting location of the sonar in the map
+        self.loc = start_loc # Current location of the sonar in the map
         self.current_angle = self.initial_angle
 
     def reset(self):
@@ -40,7 +42,7 @@ class sonar:
                 break
             ln = self.get_scan_line()
             intersect = self.get_intersect_point(ln)
-            dist = self.point_distance(intersect)
+            dist = self.intersect_distance(intersect)
             self.ranges.append(dist)
             self.current_angle += self.step
 
@@ -59,7 +61,7 @@ class sonar:
         self.intersection_points.append(None)
         return None
 
-    def point_distance(self, intersect):
+    def intersect_distance(self, intersect):
         if not intersect:
             #print 'no intersection point to check distance to'
             return -1
@@ -132,6 +134,7 @@ def intersection_point_test():
     for pt in sonar.intersection_points:
         draw_point(canvas,pt)
     simple_map.draw(canvas)
+    self.after(2, scan_line_test())
     canvas.mainloop()
 
 def create_canvas():
