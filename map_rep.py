@@ -35,9 +35,9 @@ class map_:
         vals = map(int, s.split(' ')[:-1])
         self.sonar_pos = (vals[0], vals[1])
         pt = vals[2:]
-        # possibly broken
-        for i in range(len(pt)/4):
-            self.add_line(LineString([(pt[i+2], pt[i+3]),(pt[i+4], pt[i+5])]))
+        for i in map(lambda x:x*4, range(len(pt)/4)):
+            print pt[i:i+4]
+            self.add_line(LineString([(pt[i], pt[i+1]),(pt[i+2], pt[i+3])]))
         print self.lines
             
 if __name__ == '__main__':
