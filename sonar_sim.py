@@ -15,6 +15,7 @@ class sonar:
         self.scan_lines = []
         self.intersection_points = []
         self.move_points = move_points # tuples containing a point location and angle of the sonar.
+        self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = rng # Maximum range of the sonar pulse in cm
         self.min_range = 4
         self.step = step # Angle moved by the sonar head between each pulse
@@ -36,6 +37,20 @@ class sonar:
         self.intersection_points = []
         self.current_angle = self.initial_angle
 
+    def move_in_list(self, val, step='inc'):
+        """Moves around in the movement sequence.  step can be either
+        'inc' or 'jump'. inc will increment the current position by
+        the value provided (i.e negatives work), and jump will jump to
+        a position.
+        """
+        try:
+            if step is 'inc':
+                self.current_point += val
+            if step is 'jump':
+                self.current_point = val
+        except IndexError:
+            print 'Cannot %s to value %d. Length of list is %d, current pointer is %s'%('increment' if step is 'inc' else 'jump', val,  len(self.move_points), self.current_point)
+  
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
@@ -45,6 +60,9 @@ class sonar:
 
     def move_to_random(self, height, width):
         self.move_to(Point(random.randint(0, width), random.randint(0, height)), random.randint(0,360))
+
+    def move_to_random_bounded(self, height, width, bound):
+        self.move_to(Point(random.randint(self.loc.x - bound, self.loc.x + bound), random.randint(self.loc.y - bound, self.loc.y + bound)), random.randint(self.initial_angle - bound), self.initial_angle - bound)
         
     def get_ranges(self):
         print 'Getting ranges'

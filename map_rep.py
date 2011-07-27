@@ -33,6 +33,8 @@ class map_:
         f = open(filename, 'r')
         s = f.read()
         vals = map(int, s.split(' ')[:-1])
+        # Maybe move the sonar position from being defined on the map
+        # to being defined in the sequence of points to move along?
         self.sonar_pos = (vals[0], vals[1])
         pt = vals[2:]
         for i in map(lambda x:x*4, range(len(pt)/4)):
