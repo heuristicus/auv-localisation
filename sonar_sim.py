@@ -1,5 +1,5 @@
 #!usr/bin/python
-from math import sqrt, cos, sin, radians
+from math import sqrt, cos, sin, radians, acos, degrees, asin
 from shapely import *
 from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
@@ -70,10 +70,10 @@ class sonar:
         self.move_to(Point(random.randint(0, width), random.randint(0, height)), random.randint(0,360))
 
     def move_to_random_bounded(self, height, width, bound):
-        self.move_to(Point(random.randint(self.loc.x - bound, self.loc.x + bound), random.randint(self.loc.y - bound, self.loc.y + bound)), random.randint(self.initial_angle - bound), self.initial_angle - bound)
+        self.move_to(Point(random.randint(self.loc.x - bound, self.loc.x + bound), random.randint(self.loc.y - bound, self.loc.y + bound)), random.randint(self.initial_angle - bound, self.initial_angle - bound))
         
     def get_ranges(self):
-        print 'Getting ranges'
+        #print 'Getting ranges'
         self.reset()
         for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
             #print 'new scan'
@@ -84,7 +84,7 @@ class sonar:
             dist = self.intersect_distance(intersect)
             self.ranges.append(dist)
             self.current_angle += self.step
-        print 'Finished getting ranges.'
+        #print 'Finished getting ranges.'
 
     def get_intersect_point(self, scan_line):
         # This will need to be fixed to make sure that only the point
@@ -125,6 +125,12 @@ class sonar:
         # x,y = centre point, r = radius, a = angle
         return Point(self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
 
+    def angle_at_pt(self, point, centre):
+        """Calculates the angle of a point on a circle"""
+        radius = point.distance(centre)
+        print degrees(acos((centre.x - point.x) / radius))
+        print degrees(asin((centre.y - point.y) / radius))
+
 if __name__ == '__main__':
     #simple_map = map_()
     #simple_map.add_line(LineString([(2,2),(2,40)]))
@@ -132,5 +138,22 @@ if __name__ == '__main__':
     #simple_map.add_line(LineString([(40,2),(40,40)]))
     #simple_map.add_line(LineString([(2,40),(40,40)]))
     simple_map = map_rep.map_(sys.argv[1])
-    sonar = sonar(50, 25, simple_map, [])
+    movelist = open(sys.argv[2], 'r').read().split(' ')
+    print movelist
+    movelist = map(int, movelist[:-1])
+    print movelist
+    ptlist = []
+    for i in range(len(movelist)/2):
+        ptlist.append(Point(movelist[i*2], movelist[i*2+1]))
+    print ptlist
+    sonar = sonar(50, 25, simple_map, ptlist)
+    #sonar.angle_at_pt(Point(40,60), Point(40,40))
+    #sonar.angle_at_pt(Point(60,40), Point(40,40))
+    #sonar.angle_at_pt(Point(40,20), Point(40,40))
+    #sonar.angle_at_pt(Point(20,40), Point(40,40))
+    #print '--'
+    #sonar.angle_at_pt(sonar.point_at_angle(0), Point(40,40))
+    #sonar.angle_at_pt(sonar.point_at_angle(90), Point(40,40))
+    #sonar.angle_at_pt(sonar.point_at_angle(180), Point(40,40))
+    #sonar.angle_at_pt(sonar.point_at_angle(270), Point(40,40))
     ab = gui.gui(sonar)
