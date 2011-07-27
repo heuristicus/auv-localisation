@@ -3,18 +3,18 @@ from math import sqrt, cos, sin, radians, acos, degrees, asin
 from shapely import *
 from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
-import random, map_rep, gui, sys
+import random, map_rep, gui, sys, move_list
 
 global canvas
 
 class sonar:
 
-    def __init__(self, rng, step, map_, move_points):
+    def __init__(self, rng, step, map_, move_list):
         print 'Sonar initialised.'
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
-        self.move_points = move_points # tuples containing a point location and angle of the sonar.
+        self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = rng # Maximum range of the sonar pulse in cm
         self.min_range = 4
@@ -36,6 +36,9 @@ class sonar:
         self.scan_lines = []
         self.intersection_points = []
         self.current_angle = self.initial_angle
+
+    def get_move_list(self):
+        return self.move_list.get_list()
 
     def move_in_list(self, val, step='inc'):
         """Moves around in the movement sequence.  step can be either
@@ -138,15 +141,9 @@ if __name__ == '__main__':
     #simple_map.add_line(LineString([(40,2),(40,40)]))
     #simple_map.add_line(LineString([(2,40),(40,40)]))
     simple_map = map_rep.map_(sys.argv[1])
-    movelist = open(sys.argv[2], 'r').read().split(' ')
-    print movelist
-    movelist = map(int, movelist[:-1])
-    print movelist
-    ptlist = []
-    for i in range(len(movelist)/2):
-        ptlist.append(Point(movelist[i*2], movelist[i*2+1]))
-    print ptlist
-    sonar = sonar(50, 25, simple_map, ptlist)
+    mvlist = move_list.MoveList()
+    mvlist.read_from_file(sys.argv[2])
+    sonar = sonar(50, 25, simple_map, mvlist)
     #sonar.angle_at_pt(Point(40,60), Point(40,40))
     #sonar.angle_at_pt(Point(60,40), Point(40,40))
     #sonar.angle_at_pt(Point(40,20), Point(40,40))

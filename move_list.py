@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from shapely.geometry import Point
 
 class MoveList:
     
@@ -6,13 +7,20 @@ class MoveList:
         self.movelist = []
         self.pointer = -1
 
+    def __repr__(self):
+        s = ''
+        for point in self.movelist:
+            s += str(point.coords[0])
+        return s
+
     def read_from_file(self, filename):
+        tmp = []
+        ml = []
         tmp = open(filename, 'r').read().split(' ')
-        movelist = map(int, movelist[:-1])
-        ptlist = []
-        for i in range(len(movelist)/2):
-            ptlist.append(Point(movelist[i*2], movelist[i*2+1]))
-        print ptlist
+        tmp = map(int,tmp[:-1])
+        for i in range(len(tmp)/2):
+            ml.append(Point(tmp[i*2], tmp[i*2+1]))
+        self.movelist =  ml
 
     def next(self):
         try:
@@ -32,3 +40,6 @@ class MoveList:
 
     def current(self):
         return self.movelist[self.pointer]
+
+    def get_list(self):
+        return self.movelist
