@@ -50,6 +50,14 @@ class sonar:
                 self.current_point = val
         except IndexError:
             print 'Cannot %s to value %d. Length of list is %d, current pointer is %s'%('increment' if step is 'inc' else 'jump', val,  len(self.move_points), self.current_point)
+
+    def next_point(self):
+        try:
+            self.current_point += 1
+        except IndexError:
+            print 'Reached the end of the move sequence.'
+        pt = self.move_points[self.current_point]
+        move_to(pt[0], pt[1])
   
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
