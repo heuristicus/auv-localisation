@@ -21,9 +21,8 @@ class sonar:
         self.step = step # Angle moved by the sonar head between each pulse
         self.angle_range = 270 # Total angle that the sonar sweeps through 
 
-        # Where the first pulse is directed from. Sonar
-        # initialised so that the first pulse travels from -125, where
-        # up is 0.
+        # Where the first pulse is directed from. Sonar initialised so
+        # that the first pulse travels from -125, where up is 0.
         self.initial_angle = 145
         self.map = map_ # Map to use the sonar in
         p = map_.get_sonar_pos()
@@ -54,14 +53,16 @@ class sonar:
         except IndexError:
             print 'Cannot %s to value %d. Length of list is %d, current pointer is %s'%('increment' if step is 'inc' else 'jump', val,  len(self.move_points), self.current_point)
 
-    def next_point(self):
-        try:
-            self.current_point += 1
-        except IndexError:
-            print 'Reached the end of the move sequence.'
-        pt = self.move_points[self.current_point]
-        move_to(pt[0], pt[1])
-  
+    def sim_step(self):
+        next = self.move_list.next()
+        print next
+        if next is -1:
+            return -1
+        else:
+            self.move_to(next, self.initial_angle) # MODIFY THE SECOND PARAMETER
+            self.get_ranges()
+            return 1
+        
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting

@@ -23,23 +23,19 @@ class MoveList:
         self.movelist =  ml
 
     def next(self):
-        try:
-            self.pointer += 1
-        except IndexError:
-            print 'End of movelist reached.'
-            return -1
+        self.pointer += 1
         return self.current()
 
     def previous(self):
-        try:
-            self.pointer -= 1
-        except IndexError:
-            print 'At start of movelist.'
-            return -1
+        self.pointer -= 1
         return self.current()
 
     def current(self):
-        return self.movelist[self.pointer]
-
+        try:
+            return self.movelist[self.pointer]
+        except IndexError:
+            print 'Either the start or end of the list has been reached.'
+            return -1
+            
     def get_list(self):
         return self.movelist
