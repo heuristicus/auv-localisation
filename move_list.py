@@ -3,8 +3,8 @@ from shapely.geometry import Point
 
 class MoveList:
     
-    def __init__(self):
-        self.movelist = []
+    def __init__(self, movelist=[]):
+        self.movelist = movelist
         self.pointer = -1
 
     def __repr__(self):

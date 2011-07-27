@@ -1,5 +1,5 @@
 #!usr/bin/python
-from math import sqrt, cos, sin, radians, acos, degrees, asin
+from math import sqrt, cos, sin, radians, acos, degrees, asin, atan2
 from shapely import *
 from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
@@ -127,31 +127,45 @@ class sonar:
     def point_at_angle(self, degrees):
         # (x', y') = (x + r cos a, y + r sin a)
         # x,y = centre point, r = radius, a = angle
+        
         return Point(self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
-
+        
     def angle_at_pt(self, point, centre):
         """Calculates the angle of a point on a circle"""
         radius = point.distance(centre)
-        print degrees(acos((centre.x - point.x) / radius))
-        print degrees(asin((centre.y - point.y) / radius))
+        c = degrees(acos((centre.x - point.x) / radius))
+        s = degrees(asin((centre.y - point.y) / radius))
 
+        print c, s
+        
+        # Such a terrible way of doing this.
+        if 90 <= c <= 180 and -90 <= s <= 0:
+            return -s
+            #print 'sector 1'
+        elif 0 <= c <= 90 and -90 <= s <= 0:
+            return 180 + s
+            #print 'sector 2'
+        elif 0 <= c <= 90 and 0 <= s <= 90:
+            return 180 + s
+            #print 'sector 3'
+        elif 90 <= c <= 180 and 0 <= s <= 90:
+            return 360 - s
+            #print 'sector 4'
+                
 if __name__ == '__main__':
-    #simple_map = map_()
-    #simple_map.add_line(LineString([(2,2),(2,40)]))
-    #simple_map.add_line(LineString([(2,2),(40,2)]))
-    #simple_map.add_line(LineString([(40,2),(40,40)]))
-    #simple_map.add_line(LineString([(2,40),(40,40)]))
     simple_map = map_rep.map_(sys.argv[1])
-    mvlist = move_list.MoveList()
-    mvlist.read_from_file(sys.argv[2])
+    #mvlist = move_list.MoveList()
+    #mvlist.read_from_file(sys.argv[2])
+    mvlist = move_list.MoveList([Point(0,0)])
     sonar = sonar(50, 25, simple_map, mvlist)
-    #sonar.angle_at_pt(Point(40,60), Point(40,40))
-    #sonar.angle_at_pt(Point(60,40), Point(40,40))
-    #sonar.angle_at_pt(Point(40,20), Point(40,40))
-    #sonar.angle_at_pt(Point(20,40), Point(40,40))
-    #print '--'
-    #sonar.angle_at_pt(sonar.point_at_angle(0), Point(40,40))
-    #sonar.angle_at_pt(sonar.point_at_angle(90), Point(40,40))
-    #sonar.angle_at_pt(sonar.point_at_angle(180), Point(40,40))
-    #sonar.angle_at_pt(sonar.point_at_angle(270), Point(40,40))
-    ab = gui.gui(sonar)
+    sonar.move_to(Point(0,0), 0)
+    sonar.angle_at_pt(Point(40,60), Point(40,40))
+    sonar.angle_at_pt(Point(60,40), Point(40,40))
+    sonar.angle_at_pt(Point(40,20), Point(40,40))
+    sonar.angle_at_pt(Point(20,40), Point(40,40))
+    print '--'
+    for i in range(360):
+        print '--'
+        #sonar.point_at_angle(i)
+        sonar.angle_at_pt(sonar.point_at_angle(i), sonar.loc)
+    #ab = gui.gui(sonar)
