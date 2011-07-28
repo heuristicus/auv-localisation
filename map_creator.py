@@ -4,7 +4,7 @@ import sys
 from Tkinter import *
 import tkFileDialog
 import tkMessageBox
-from math import acos, asin, degrees, sqrt, atan2
+from math import degrees, sqrt, atan2
 
 
 def init():
@@ -13,8 +13,10 @@ def init():
     global pos_flag
     global mv_flag
     global mv_points
+    global rotations
     point_list = []
     mv_points = []
+    rotations = []
     sonar_pos = None
     pos_flag = 0
     mv_flag = 0
@@ -43,7 +45,10 @@ def set_sonar_pos():
     
 def create_move_list():
     global mv_flag
+    if mv_flag is 0:
+        tkMessageBox.showwarning("Info", "Click on the map to define a set of points to travel along. The first click indicates the point at which to put the sonar, and the second the rotation of the sonar.")
     mv_flag = 1 if mv_flag is 0 else 0
+    
 
 def save_map_to_file():
     if not sonar_pos:
@@ -61,8 +66,9 @@ def save_move_to_file():
         tkMessageBox.showwarning("Error", "You haven\'t made a move sequence.")
         return
     f = tkFileDialog.asksaveasfile(defaultextension='.mv')
-    for val in mv_points:
-        f.write(str(val) + ' ')
+    for val in range(len(mv_points)/2):
+        pt = mv_points[val*2:val*2 + 2]
+#f.write(str(val) + ' ')
     f.close()
 
 def m1down(event):
@@ -77,23 +83,25 @@ def m1down(event):
         sonar_pos = (event.x, event.y)
         print 'Setting sonar position to ' + str(sonar_pos)
     elif mv_flag:
-        if mv_flag is 1:
+        if len(mv_points) is not len(rotations):
+            rotations.extend([event.x, event.y])
+            if len(mv_points) is not 0:
+                draw_move_point()
+        else:
             mv_points.extend([event.x, event.y])
-            mv_flag = 2
-        elif mv_flag is 2:
-            mv_points.append(angle_at_pt())
     else:
         point_list.extend([event.x, event.y])
         if len(point_list) % 4 is 0:
             canvas.create_line(*point_list[-4:])
     
+def draw_move_point():
+    pts = mv_points[-2:] + rotations[-2:]
+    canvas.create_oval(pts[0] - 3, pts[1] + 3, pts[0] + 3, pts[1] - 3)
+    canvas.create_line(*pts)
 
 def angle_at_pt(point, centre):
         """Calculates the angle of a point on a circle"""
         radius = sqrt(pow(point[0] - centre[0], 2) + pow(point[1] - centre[1], 2))
-        c = degrees(acos((centre[0] - point[0]) / radius))
-        s = degrees(asin((centre[1] - point[1]) / radius))
-        #p0 = (centre[0], centre[1] - sqrt(pow(point[0] - centre[0], 2) + pow(point[1] - centre[1], 2)))
         p0 = (centre[0], centre[1] + radius)
         print p0
         a = degrees(abs(2 * atan2(point[1] - p0[1], point[0] - p0[0])))
