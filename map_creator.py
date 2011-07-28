@@ -4,7 +4,7 @@ import sys
 from Tkinter import *
 import tkFileDialog
 import tkMessageBox
-import math # REMOVE 
+from math import acos, asin, degrees, sqrt, atan2
 
 
 def init():
@@ -79,13 +79,25 @@ def m1down(event):
     elif mv_flag:
         if mv_flag is 1:
             mv_points.extend([event.x, event.y])
-            #mv_flag = 2
-        #elif mv_flag = 2:
-            
+            mv_flag = 2
+        elif mv_flag is 2:
+            mv_points.append(angle_at_pt())
     else:
         point_list.extend([event.x, event.y])
         if len(point_list) % 4 is 0:
             canvas.create_line(*point_list[-4:])
     
+
+def angle_at_pt(point, centre):
+        """Calculates the angle of a point on a circle"""
+        radius = sqrt(pow(point[0] - centre[0], 2) + pow(point[1] - centre[1], 2))
+        c = degrees(acos((centre[0] - point[0]) / radius))
+        s = degrees(asin((centre[1] - point[1]) / radius))
+        #p0 = (centre[0], centre[1] - sqrt(pow(point[0] - centre[0], 2) + pow(point[1] - centre[1], 2)))
+        p0 = (centre[0], centre[1] + radius)
+        print p0
+        a = degrees(abs(2 * atan2(point[1] - p0[1], point[0] - p0[0])))
+        return a
+           
 if __name__ == '__main__':
     init()
