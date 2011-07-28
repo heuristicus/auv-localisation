@@ -61,14 +61,15 @@ def save_map_to_file():
     f.close()
 
 def save_move_to_file():
-    print 'implement'
     if not mv_points:
         tkMessageBox.showwarning("Error", "You haven\'t made a move sequence.")
         return
     f = tkFileDialog.asksaveasfile(defaultextension='.mv')
     for val in range(len(mv_points)/2):
         pt = mv_points[val*2:val*2 + 2]
-#f.write(str(val) + ' ')
+        rot = rotations[val*2:val*2 + 2]
+        a = angle_at_pt(rot, pt)
+        f.write('%s %s %s '%(str(pt[0]), str(pt[1]), str(a)))
     f.close()
 
 def m1down(event):
@@ -103,7 +104,6 @@ def angle_at_pt(point, centre):
         """Calculates the angle of a point on a circle"""
         radius = sqrt(pow(point[0] - centre[0], 2) + pow(point[1] - centre[1], 2))
         p0 = (centre[0], centre[1] + radius)
-        print p0
         a = degrees(abs(2 * atan2(point[1] - p0[1], point[0] - p0[0])))
         return a
            
