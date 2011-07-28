@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from shapely.geometry import Point
+import sys
 
 class MoveList:
     
@@ -10,16 +11,16 @@ class MoveList:
     def __repr__(self):
         s = ''
         for point in self.movelist:
-            s += str(point.coords[0])
-        return s
+            s += 'Point: %s \nRotation: %s\n'%(str(point[0].coords[0]), str(point[1]))
+        return s[:-2] # crude way to get rid of last newline
 
     def read_from_file(self, filename):
         tmp = []
         ml = []
         tmp = open(filename, 'r').read().split(' ')
-        tmp = map(int,tmp[:-1])
-        for i in range(len(tmp)/2):
-            ml.append(Point(tmp[i*2], tmp[i*2+1]))
+        tmp = map(float,tmp[:-1])
+        for i in range(len(tmp)/3):
+            ml.append([Point(tmp[i*3], tmp[i*3+1]), tmp[i*3+2]])
         self.movelist =  ml
 
     def next(self):
@@ -39,3 +40,8 @@ class MoveList:
             
     def get_list(self):
         return self.movelist
+
+if __name__ == '__main__':
+    m = MoveList()
+    m.read_from_file(sys.argv[1])
+    print m

@@ -9,16 +9,12 @@ from math import degrees, sqrt, atan2
 
 def init():
     global point_list
-    global sonar_pos
-    global pos_flag
     global mv_flag
     global mv_points
     global rotations
     point_list = []
     mv_points = []
     rotations = []
-    sonar_pos = None
-    pos_flag = 0
     mv_flag = 0
     create_canvas()
    
@@ -30,8 +26,6 @@ def create_canvas():
     sv.pack()
     sm = Button(ms, text='Save move', command=save_move_to_file)
     sm.pack()
-    sn = Button(ms, text='Sonar pos', command=set_sonar_pos)
-    sn.pack()
     mv = Button(ms, text='Movement list', command=create_move_list)
     mv.pack()
     canvas = Canvas(ms, width=800, height=800)
@@ -39,23 +33,14 @@ def create_canvas():
     canvas.bind("<Button-1>", m1down)
     canvas.mainloop()
 
-def set_sonar_pos():
-    global pos_flag
-    pos_flag = 1
-    
 def create_move_list():
     global mv_flag
     if mv_flag is 0:
         tkMessageBox.showwarning("Info", "Click on the map to define a set of points to travel along. The first click indicates the point at which to put the sonar, and the second the rotation of the sonar.")
     mv_flag = 1 if mv_flag is 0 else 0
     
-
 def save_map_to_file():
-    if not sonar_pos:
-        tkMessageBox.showwarning("Error", "You must define a sonar location for the map.")
-        return
     f = tkFileDialog.asksaveasfile(defaultextension='.map')
-    f.write('%d %d '%(sonar_pos))
     for val in point_list:
         f.write(str(val) + ' ')
     f.close()
@@ -76,14 +61,8 @@ def m1down(event):
     # Might be nice to extend this to make it so that if you click
     # close to another point (say within 5 units), then the point
     # added is the same as the one that is close.
-    global pos_flag
     global mv_flag
-    if pos_flag:
-        pos_flag = 0
-        global sonar_pos 
-        sonar_pos = (event.x, event.y)
-        print 'Setting sonar position to ' + str(sonar_pos)
-    elif mv_flag:
+    if mv_flag:
         if len(mv_points) is not len(rotations):
             rotations.extend([event.x, event.y])
             if len(mv_points) is not 0:
