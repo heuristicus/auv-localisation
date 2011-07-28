@@ -23,11 +23,11 @@ class sonar:
 
         # Where the first pulse is directed from. Sonar initialised so
         # that the first pulse travels from -125, where up is 0.
-        self.initial_angle = 145
         self.map = map_ # Map to use the sonar in
-        p = map_.get_sonar_pos()
-        self.start_loc = Point(p[0], p[1]) # Starting location of the sonar in the map
+        start_point = move_list.first()
+        self.start_loc = start_point[0] # Starting location of the sonar in the map
         self.loc = self.start_loc # Current location of the sonar in the map
+        self.initial_angle = start_point[1]
         self.current_angle = self.initial_angle
 
     def reset(self):
@@ -55,11 +55,10 @@ class sonar:
 
     def sim_step(self):
         next = self.move_list.next()
-        print next
         if next is -1:
             return -1
         else:
-            self.move_to(next, self.initial_angle) # MODIFY THE SECOND PARAMETER
+            self.move_to(next[0], next[1]) # MODIFY THE SECOND PARAMETER
             self.get_ranges()
             return 1
         

@@ -31,6 +31,9 @@ class MoveList:
         self.pointer -= 1
         return self.current()
 
+    def first(self):
+        return self.movelist[0]
+
     def current(self):
         try:
             return self.movelist[self.pointer]
