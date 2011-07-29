@@ -66,8 +66,9 @@ class sonar:
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
         and not an increment on the current rotation."""
+        print rotation
         self.loc = loc
-        self.initial_angle = (145 + rotation) % 360
+        self.initial_angle = 315 - rotation #just a guess, works ok
 
     def move_to_random(self, height, width):
         self.move_to(Point(random.randint(0, width), random.randint(0, height)), random.randint(0,360))
@@ -90,10 +91,6 @@ class sonar:
         #print 'Finished getting ranges.'
 
     def get_intersect_point(self, scan_line):
-        # This will need to be fixed to make sure that only the point
-        # closest to the sonar is returned when the same scan line
-        # intersects two different map lines.
-        print '------------'
         x = []
         for line in self.map.lines:
             x.append(scan_line.intersection(line))
@@ -108,7 +105,7 @@ class sonar:
                 closest = c
         self.intersection_points.append(closest)
         return closest
-
+    
     def intersect_distance(self, intersect):
         if not intersect:
             #print 'no intersection point to check distance to'

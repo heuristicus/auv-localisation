@@ -38,7 +38,7 @@ class map_:
         pt = vals
         for i in map(lambda x:x*4, range(len(pt)/4)):
             self.add_line(LineString([(pt[i], pt[i+1]),(pt[i+2], pt[i+3])]))
-            
+
 if __name__ == '__main__':
     m = map_()
     m.load_map_from_file(sys.argv[1])
