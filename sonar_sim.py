@@ -58,7 +58,7 @@ class sonar:
         if next is -1:
             return -1
         else:
-            self.move_to(next[0], next[1]) # MODIFY THE SECOND PARAMETER
+            self.move_to(next[0], next[1])
             self.get_ranges()
             return 1
         
@@ -67,7 +67,7 @@ class sonar:
         rotation applied. The rotation is assumed to be a new setting
         and not an increment on the current rotation."""
         self.loc = loc
-        self.initial_angle = rotation
+        self.initial_angle = (145 + rotation) % 360
 
     def move_to_random(self, height, width):
         self.move_to(Point(random.randint(0, width), random.randint(0, height)), random.randint(0,360))
