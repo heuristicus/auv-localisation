@@ -93,16 +93,21 @@ class sonar:
         # This will need to be fixed to make sure that only the point
         # closest to the sonar is returned when the same scan line
         # intersects two different map lines.
+        print '------------'
+        x = []
         for line in self.map.lines:
-            x = scan_line.intersection(line)
+            x.append(scan_line.intersection(line))
             #print x
-            if x:
-                self.intersection_points.append(x)
-                return x
-
-        #print 'No intersection'
-        self.intersection_points.append(None)
-        return None
+            
+        min_dist = sys.maxint
+        closest = None
+        for c in x:
+            cur_dist = c.distance(self.loc)
+            if cur_dist < min_dist:
+                min_dist = cur_dist
+                closest = c
+        self.intersection_points.append(closest)
+        return closest
 
     def intersect_distance(self, intersect):
         if not intersect:

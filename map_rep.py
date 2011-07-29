@@ -35,8 +35,7 @@ class map_:
         vals = map(int, s.split(' ')[:-1])
         # Maybe move the sonar position from being defined on the map
         # to being defined in the sequence of points to move along?
-        self.sonar_pos = (vals[0], vals[1])
-        pt = vals[2:]
+        pt = vals
         for i in map(lambda x:x*4, range(len(pt)/4)):
             self.add_line(LineString([(pt[i], pt[i+1]),(pt[i+2], pt[i+3])]))
             
