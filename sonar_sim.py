@@ -14,6 +14,7 @@ class sonar:
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
+        self.particles = []
         self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = rng # Maximum range of the sonar pulse in cm
@@ -35,6 +36,7 @@ class sonar:
         self.ranges = []
         self.scan_lines = []
         self.intersection_points = []
+        self.particles = [] # THIS NEEDS TO BE CHANGED LATER!
         self.current_angle = self.initial_angle
 
     def get_move_list(self):
@@ -61,7 +63,8 @@ class sonar:
         else:
             self.move_to(next[0], next[1])
             self.get_ranges()
-            self.apply_range_noise()
+            self.math.apply_range_noise(self.ranges, 0.5)
+            self.generate_particles(30)
             return 1
                         
     def move_to(self, loc, rotation):
@@ -92,7 +95,11 @@ class sonar:
             self.scan_lines.append(ln)
             self.intersection_points.append(intersect)
             self.current_angle += self.step
-        return self.math.apply_range_noise(self.ranges, 0.5)
+        
+    def generate_particles(self, number):
+        print 'generating'
+        for i in range(number):
+            self.particles.append(particle.Particle(self.math.apply_location_noise(self.loc, 10, 10), self))
         
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])
@@ -100,6 +107,6 @@ if __name__ == '__main__':
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
     sonar = sonar(50, 25, simple_map, mvlist)
-    a = particle.Particle(sonar.loc, sonar)
-    a.get_ranges()
-    #ab = gui.gui(sonar)
+    #a = particle.Particle(sonar.loc, sonar)
+    #a.get_ranges()
+    ab = gui.gui(sonar)

@@ -19,6 +19,7 @@ class gui:
         if self.delete_old:
             self.canvas.delete('scan')
             self.canvas.delete('intersect')
+            self.canvas.delete('particle')
             
         self.draw_sonar_data()
         check = self.sonar.sim_step()
@@ -31,6 +32,8 @@ class gui:
             draw_line(self.canvas, line, tag='scan')
         for point in self.sonar.intersection_points:
             draw_point(self.canvas, point, tag='intersect')
+        for particle in self.sonar.particles:
+            draw_point(self.canvas, particle.loc, tag='particle')
 
     def draw_map(self):
         #print 'map'

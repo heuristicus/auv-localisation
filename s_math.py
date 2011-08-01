@@ -2,7 +2,7 @@
 from math import sin, radians, cos
 from shapely import *
 from shapely.geometry import LineString, Point
-import sys
+import sys, random
 
 class SonarMath:
 
@@ -45,6 +45,12 @@ class SonarMath:
         return Point(centre.x + (radius * cos(radians(degrees))), centre.y + (radius * sin(radians(degrees))))
 
     def apply_range_noise(self, lst, sigma):
+        noise_ranges = []
         for i in lst:
             noise_ranges.append(random.gauss(i,sigma) if i is not -1 else -1)
         return noise_ranges
+
+    def apply_location_noise(self, loc, xsigma, ysigma):
+        x = random.gauss(loc.x, xsigma)
+        y = random.gauss(loc.y, ysigma)
+        return Point(x,y)
