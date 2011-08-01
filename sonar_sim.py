@@ -3,7 +3,7 @@ from math import sqrt, cos, sin, radians, acos, degrees, asin, atan2
 from shapely import *
 from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
-import random, map_rep, gui, sys, move_list
+import random, map_rep, gui, sys, move_list, s_math
 
 global canvas
 
@@ -29,6 +29,7 @@ class sonar:
         self.loc = self.start_loc # Current location of the sonar in the map
         self.initial_angle = start_point[1]
         self.current_angle = self.initial_angle
+        self.math = s_math.SonarMath()
 
     def reset(self):
         self.ranges = []
@@ -60,8 +61,16 @@ class sonar:
         else:
             self.move_to(next[0], next[1])
             self.get_ranges()
+            self.apply_range_noise()
             return 1
-        
+
+    def apply_range_noise(self):
+        self.noise_ranges = []
+        for i in self.ranges:
+            self.noise_ranges.append(random.gauss(i,0.4) if i is not -1 else -1)
+        print self.ranges
+        print self.noise_ranges
+                        
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
@@ -83,53 +92,15 @@ class sonar:
             #print 'new scan'
             if self.current_angle > self.initial_angle + self.angle_range:
                 break
-            ln = self.get_scan_line()
-            intersect = self.get_intersect_point(ln)
-            dist = self.intersect_distance(intersect)
+            ln = self.math.get_scan_line(self.loc, self.current_angle, self.max_range)
+            intersect = self.math.get_intersect_point(self.loc, ln, self.map)
+            dist = self.math.intersect_distance(self.loc, intersect, self.min_range, self.max_range,)
             self.ranges.append(dist)
+            self.scan_lines.append(ln)
+            self.intersection_points.append(intersect)
             self.current_angle += self.step
         #print 'Finished getting ranges.'
 
-    def get_intersect_point(self, scan_line):
-        x = []
-        for line in self.map.lines:
-            x.append(scan_line.intersection(line))
-            #print x
-            
-        min_dist = sys.maxint
-        closest = None
-        for c in x:
-            cur_dist = c.distance(self.loc)
-            if cur_dist < min_dist:
-                min_dist = cur_dist
-                closest = c
-        self.intersection_points.append(closest)
-        return closest
-    
-    def intersect_distance(self, intersect):
-        if not intersect:
-            #print 'no intersection point to check distance to'
-            return -1
-        else:
-            dist = intersect.distance(self.loc)
-            #print 'distance is %d'%(dist)
-            if self.min_range < dist < self.max_range:
-                return dist
-            else:
-                #print 'Distance not within tolerated range.'
-                return -1
-
-    def get_scan_line(self):
-        pt = self.point_at_angle(self.current_angle)
-        ln = LineString([self.loc.coords[0], pt.coords[0]])
-        self.scan_lines.append(ln)
-        return ln
-       
-    def point_at_angle(self, degrees):
-        # (x', y') = (x + r cos a, y + r sin a)
-        # x,y = centre point, r = radius, a = angle
-        return Point(self.loc.x + (self.max_range * cos(radians(degrees))), self.loc.y + (self.max_range * sin(radians(degrees))))
-                
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])
     mvlist = move_list.MoveList()
