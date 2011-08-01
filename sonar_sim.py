@@ -1,9 +1,9 @@
 #!usr/bin/python
 from math import sqrt, cos, sin, radians, acos, degrees, asin, atan2
-from shapely import *
-from shapely.geometry import LineString, Point
 from Tkinter import Tk, Canvas
-import random, map_rep, gui, sys, move_list, s_math
+from shapely import *
+from shapely.geometry import Point
+import random, map_rep, gui, sys, move_list, s_math, particle
 
 global canvas
 
@@ -63,13 +63,6 @@ class sonar:
             self.get_ranges()
             self.apply_range_noise()
             return 1
-
-    def apply_range_noise(self):
-        self.noise_ranges = []
-        for i in self.ranges:
-            self.noise_ranges.append(random.gauss(i,0.4) if i is not -1 else -1)
-        print self.ranges
-        print self.noise_ranges
                         
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
@@ -107,4 +100,6 @@ if __name__ == '__main__':
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
     sonar = sonar(50, 25, simple_map, mvlist)
-    ab = gui.gui(sonar)
+    a = particle.Particle(sonar.loc, sonar)
+    a.get_ranges()
+    #ab = gui.gui(sonar)

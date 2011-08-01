@@ -1,48 +1,29 @@
 #!/usr/bin/python
-import random
-from Tkinter import *
-
-global particles
-
-def distribute(number, loc):
-    """"Distribute a certain number of particles around a location in
-    cartesian coordinates"""
-    global particles
-    particles = []
-    for i in range(number):
-        particles.append(make_particle(loc, 15))
-
-    print particles
-
-def make_particle(loc, var):
-    xval = random.gauss(loc[0], var)
-    yval = random.gauss(loc[1], var)
-
-    if xval > 0 and yval > 0:
-        return Particle(xval, yval, gen_wt())
-    else:
-        return make_particle(loc,var)
-
-def gen_wt():
-    # not sure what to do here yet - maybe inversely proportional to the
-    # proximity to the location?
-    return 0
+import s_math
 
 class Particle:
     
-    def __init__(self, x, y, wt):
-        self.x = x
-        self.y = y
-        self.wt = wt # weight
+    def __init__(self, loc, sonar, wt=0):
+        self.loc = loc
+        self.wt = wt
+        self.map = sonar.map
+        self.maxrange = sonar.max_range
+        self.minrange = sonar.min_range
+        self.initial_angle = sonar.initial_angle
+        self.current_angle = self.initial_angle
+        self.angle_range = sonar.angle_range
+        self.step = sonar.step
+        self.math = s_math.SonarMath()
 
-    def __repr__(self):
-        return "(%d, %d)"%(self.x, self.y)
-
-if __name__ == '__main__':
-    distribute(300, [50,50])
-    m = Tk()
-    c = Canvas(m)
-    c.pack()
-    for particle in particles:
-        c.create_oval(particle.x, particle.y, particle.x + 2, particle.y + 2)
-    c.mainloop()
+    def get_ranges(self):
+        self.ranges = []
+        for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
+            #print 'new scan'
+            if self.current_angle > self.initial_angle + self.angle_range:
+                break
+            ln = self.math.get_scan_line(self.loc, self.current_angle, self.maxrange)
+            intersect = self.math.get_intersect_point(self.loc, ln, self.map)
+            dist = self.math.intersect_distance(self.loc, intersect, self.minrange, self.maxrange,)
+            self.ranges.append(dist)
+            self.current_angle += self.step
+        print self.ranges
