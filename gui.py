@@ -13,6 +13,7 @@ class gui:
         self.draw_move_points()
         self.delete_old = True
         self.tk.after(20,self.redraw)
+
         self.tk.mainloop()
         
     def redraw(self):
@@ -24,7 +25,7 @@ class gui:
         self.draw_sonar_data()
         check = self.sonar.sim_step()
         if check is not -1:
-            self.tk.after(2000, self.redraw)
+            self.tk.after(50, self.redraw)
         
     def draw_sonar_data(self):
         #print 'data'

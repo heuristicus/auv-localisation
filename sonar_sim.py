@@ -65,13 +65,23 @@ class sonar:
             self.get_ranges()
             self.math.apply_range_noise(self.ranges, 0.5)
             self.generate_particles(30)
+            #print 'comparing ranges'
+            for particle in self.particles:
+                particle.get_ranges()
+                self.compare_ranges(particle)
+               # print '---------------------'
             return 1
+
+    def compare_ranges(self, particle):
+        for i in range(len(particle.ranges)):
+            self.ranges[i] - particle.ranges[i]
                         
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
         and not an increment on the current rotation."""
         print rotation
+
         self.loc = loc
         self.initial_angle = 315 - rotation #just a guess, works ok
 
@@ -97,7 +107,6 @@ class sonar:
             self.current_angle += self.step
         
     def generate_particles(self, number):
-        print 'generating'
         for i in range(number):
             self.particles.append(particle.Particle(self.math.apply_location_noise(self.loc, 10, 10), self))
         

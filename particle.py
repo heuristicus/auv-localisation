@@ -20,7 +20,6 @@ class Particle:
         # loop might not work for certain step numbers?
         #for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
         for i in range(360/self.step):
-            print i
             if self.current_angle > self.initial_angle + self.angle_range:
                 break
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.maxrange)
@@ -28,4 +27,3 @@ class Particle:
             dist = self.math.intersect_distance(self.loc, intersect, self.minrange, self.maxrange,)
             self.ranges.append(dist)
             self.current_angle += self.step
-        print self.ranges
