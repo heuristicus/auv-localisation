@@ -17,8 +17,10 @@ class Particle:
 
     def get_ranges(self):
         self.ranges = []
-        for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
-            #print 'new scan'
+        # loop might not work for certain step numbers?
+        #for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
+        for i in range(360/self.step):
+            print i
             if self.current_angle > self.initial_angle + self.angle_range:
                 break
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.maxrange)

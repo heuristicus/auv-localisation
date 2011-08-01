@@ -79,10 +79,10 @@ class sonar:
         self.move_to(Point(random.randint(self.loc.x - bound, self.loc.x + bound), random.randint(self.loc.y - bound, self.loc.y + bound)), random.randint(self.initial_angle - bound, self.initial_angle - bound))
         
     def get_ranges(self):
-        #print 'Getting ranges'
         self.reset()
-        for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
-            #print 'new scan'
+        # loop might not work for certain step numbers?
+        #for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
+        for i in range(360/self.step):
             if self.current_angle > self.initial_angle + self.angle_range:
                 break
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.max_range)
@@ -92,8 +92,8 @@ class sonar:
             self.scan_lines.append(ln)
             self.intersection_points.append(intersect)
             self.current_angle += self.step
-        #print 'Finished getting ranges.'
-
+        return self.math.apply_range_noise(self.ranges, 0.5)
+        
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])
     mvlist = move_list.MoveList()
