@@ -11,7 +11,7 @@ class gui:
         self.sonar = sonar
         self.draw_map()
         self.draw_move_points()
-        self.delete_old = True
+        self.delete_old = False
         self.tk.after(20,self.redraw)
 
         self.tk.mainloop()
@@ -31,11 +31,12 @@ class gui:
         #print 'data'
         for line in self.sonar.scan_lines:
             draw_line(self.canvas, line, tag='scan')
-        for point in self.sonar.intersection_points:
-            draw_point(self.canvas, point, tag='intersect')
+        #for point in self.sonar.intersection_points:
+            #draw_point(self.canvas, point, tag='intersect')
         for particle in self.sonar.particles:
-            draw_point(self.canvas, particle.loc, tag='particle')
-
+            draw_point(self.canvas, particle.loc, weight=particle.wt, tag='particle')
+        draw_point(self.canvas, self.sonar.loc, tag='sonar', colour='red')
+        
     def draw_map(self):
         #print 'map'
         for line in self.sonar.map.lines:
@@ -49,11 +50,13 @@ def draw_line(canvas, line, tag=''):
     c = line.coords
     canvas.create_line(c[0][0], c[0][1], c[1][0], c[1][1], tags=tag)
 
-def draw_point(canvas, point, tag=''):
+def draw_point(canvas, point, weight=0, colour='black', tag=''):
     pt = point
     if not point: return
-    canvas.create_oval(pt.x - 1, pt.y - 1, pt.x + 1, pt.y + 1, tags=tag)
-
+    if weight == 0:
+        canvas.create_oval(pt.x - 1, pt.y - 1, pt.x + 1, pt.y + 1, tags=tag, outline=colour)
+    else:
+        canvas.create_oval(pt.x - weight*2, pt.y - weight*2, pt.x + weight*2, pt.y + weight*2, tags=tag, outline=colour)
 def draw_circle_from_centre(canvas, radius, centre):
     # probably the wrong way around, technically, but since it's a
     # circle it makes no difference really.

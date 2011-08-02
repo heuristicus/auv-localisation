@@ -64,20 +64,25 @@ class sonar:
             self.move_to(next[0], next[1])
             self.get_ranges()
             self.math.apply_range_noise(self.ranges, 0.5)
-            self.generate_particles(30)
+            self.generate_particles(5)
             #print 'comparing ranges'
+            p_cp = []
             for particle in self.particles:
                 particle.get_ranges()
-                self.compare_ranges(particle)
+                p_cp.append(self.compare_ranges(particle))
                # print '---------------------'
+            print p_cp
             return 1
 
     def compare_ranges(self, particle):
         prob_sum = 0
         for i in range(len(particle.ranges)):
-            prob_sum += self.math.gaussian(self.ranges[i], 1, particle.ranges[i])
-
-        print prob_sum
+            if self.ranges[i] is -1 and particle.ranges[i] is -1:
+                prob_sum += 0.01
+            else:
+                prob_sum += self.math.gaussian(self.ranges[i], 1, particle.ranges[i])
+        particle.wt = prob_sum
+        return prob_sum
                         
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
