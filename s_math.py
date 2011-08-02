@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from math import sin, radians, cos
+from math import sin, radians, cos, e, pi, sqrt
 from shapely import *
 from shapely.geometry import LineString, Point
 import sys, random
@@ -54,3 +54,12 @@ class SonarMath:
         x = random.gauss(loc.x, xsigma)
         y = random.gauss(loc.y, ysigma)
         return Point(x,y)
+
+    def gaussian(self, mu, sigma, x):
+        p1 = 1/(sqrt(2*pi*pow(sigma,2)))
+        p2 = pow(e, ((-1*pow((x-mu),2)))/2.0*pow(sigma,2))
+        return p1*p2
+
+if __name__ == '__main__':
+    a = SonarMath()
+    print a.gaussian(2,1,2)
