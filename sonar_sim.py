@@ -73,8 +73,11 @@ class sonar:
             return 1
 
     def compare_ranges(self, particle):
+        prob_sum = 0
         for i in range(len(particle.ranges)):
-            self.ranges[i] - particle.ranges[i]
+            prob_sum += self.math.gaussian(self.ranges[i], 1, particle.ranges[i])
+
+        print prob_sum
                         
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
