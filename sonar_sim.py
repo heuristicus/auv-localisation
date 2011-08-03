@@ -62,14 +62,14 @@ class sonar:
             return -1 # no more steps in list
         else:
             if not self.particles:
-                self.generate_particles(1)
+                self.generate_particles(10)
             self.move_to(next[0], next[1])
             self.get_ranges()
             self.math.apply_range_noise(self.ranges, 0.5)
             move_vector = self.math.get_move_vector(current, next[0])
             p_cp = []
             for particle in self.particles:
-                particle.move(move_vector)
+                particle.move(move_vector, self.initial_angle)
                 particle.get_ranges()
                 print zip(self.ranges, particle.ranges)
                 p_cp.append(self.compare_ranges(particle))

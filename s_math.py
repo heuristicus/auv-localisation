@@ -27,13 +27,12 @@ class SonarMath:
             return -1
         else:
             dist = intersect.distance(location)
-            return dist
-            #print 'distance is %d'%(dist)
-            #if minrange < dist < maxrange:
-             #   return dist
-            #else:
-                #print 'Distance not within tolerated range.'
-             #   return -1
+            print 'distance is %d'%(dist)
+            if minrange < dist < maxrange:
+                return dist
+            else:
+                print 'Distance not within tolerated range.'
+                return -1
 
     def get_scan_line(self, location, angle, length):
         pt = self.point_at_angle(location, angle, length)

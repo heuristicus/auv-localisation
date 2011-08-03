@@ -53,10 +53,10 @@ class gui:
     def draw_particle_data(self):
         for particle in self.sonar.particles:
             draw_point(self.canvas, particle.loc, weight=particle.wt, tag='particle')
-            for line in particle.scan:
-                draw_line(self.canvas, line, tag='scan')
-            for intersect in particle.int:
-                draw_point(self.canvas, intersect, tag='intersect')
+            #for line in particle.scan:
+                #draw_line(self.canvas, line, tag='scan')
+            #for intersect in particle.int:
+                #draw_point(self.canvas, intersect, tag='intersect')
         
     def draw_map(self):
         #print 'map'
