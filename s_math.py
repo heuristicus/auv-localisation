@@ -55,8 +55,18 @@ class SonarMath:
         y = random.gauss(y, ysigma)
         return (x,y)
 
+    def get_noise(self, value, sigma):
+        return random.gauss(value, sigma)
+
     def get_move_vector(self, p1, p2):
         return (p2.x - p1.x, p2.y - p1.y)
+
+    def rotate_vector(self, point, vector, angle):
+        sn = sin(radians(angle))
+        cs = cos(radians(angle))
+        x = vector[0]*cs - vector[1]*sn + point.x + point.y*sn - point.x*cs
+        y = vector[0]*sn + vector[1]*cs + point.y - point.x*sn - point.y*cs
+        print x, y
 
     def gaussian(self, mu, sigma, x):
         p1 = 1/(sqrt(2*pi*pow(sigma,2)))
@@ -65,5 +75,6 @@ class SonarMath:
 
 if __name__ == '__main__':
     a = SonarMath()
-    print a.get_move_vector(Point(10,10), Point(5,5))
-    print a.gaussian(2,1,2)
+    #a.rotate_vector(Point(20,8), (40,80), -30)
+    #print a.get_move_vector(Point(10,10), Point(5,5))
+    #print a.gaussian(2,1,2)

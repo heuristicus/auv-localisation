@@ -38,6 +38,7 @@ class Particle:
             self.current_angle += self.step
 
     def move(self, vector, angle):
+        angle_noise = math.get_noise(0, 5)
         n_vec = self.math.apply_point_noise(vector[0], vector[1], 0.5, 0.5)
         a = Point(n_vec[0] + self.loc.x, n_vec[1] + self.loc.y)
         self.initial_angle = angle
