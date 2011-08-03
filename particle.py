@@ -27,3 +27,6 @@ class Particle:
             dist = self.math.intersect_distance(self.loc, intersect, self.minrange, self.maxrange,)
             self.ranges.append(dist)
             self.current_angle += self.step
+
+    def move(self, vector):
+        n_vec = self.math.apply_point_noise(vector[0], vector[1])

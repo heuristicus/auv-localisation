@@ -64,7 +64,7 @@ class sonar:
             self.move_to(next[0], next[1])
             self.get_ranges()
             self.math.apply_range_noise(self.ranges, 0.5)
-            self.generate_particles(5)
+            self.generate_particles(10)
             #print 'comparing ranges'
             p_cp = []
             for particle in self.particles:
@@ -78,9 +78,9 @@ class sonar:
         prob_sum = 0
         for i in range(len(particle.ranges)):
             if self.ranges[i] is -1 and particle.ranges[i] is -1:
-                prob_sum += 0.01
+                prob_sum += 0.03
             else:
-                prob_sum += self.math.gaussian(self.ranges[i], 1, particle.ranges[i])
+                prob_sum += self.math.gaussian(self.ranges[i], 0.5, particle.ranges[i])
         particle.wt = prob_sum
         return prob_sum
                         
@@ -116,7 +116,7 @@ class sonar:
         
     def generate_particles(self, number):
         for i in range(number):
-            self.particles.append(particle.Particle(self.math.apply_location_noise(self.loc, 10, 10), self))
+            self.particles.append(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, 10, 10)), self))
         
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])

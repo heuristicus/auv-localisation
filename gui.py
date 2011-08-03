@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from sonar_sim import sonar as snr, map_rep
-from Tkinter import Tk, Canvas
+from Tkinter import Tk, Canvas, Button
 
 class gui:
 
@@ -8,29 +8,43 @@ class gui:
         self.tk = Tk()
         self.canvas = Canvas(self.tk, height=800, width=800)
         self.canvas.pack()
+        self.next = Button(self.tk, text='next', command=self.step)
+        self.next.pack()
+        self.rb = Button(self.tk, text='run', command=self.run)
+        self.rb.pack()
         self.sonar = sonar
         self.draw_map()
         self.draw_move_points()
         self.delete_old = False
-        self.tk.after(20,self.redraw)
+        #self.tk.after(20,self.redraw)
 
         self.tk.mainloop()
+
+    def run(self):
+        self.next.config(state='disabled')
+        self.rb.config(state='disabled')
+        self.manual = False
+        self.tk.after(50, self.redraw)
+
+    def step(self):
+        self.manual = True
+        self.redraw()
         
     def redraw(self):
+        check = self.sonar.sim_step()
         if self.delete_old:
             self.canvas.delete('scan')
             self.canvas.delete('intersect')
             self.canvas.delete('particle')
             
         self.draw_sonar_data()
-        check = self.sonar.sim_step()
-        if check is not -1:
+        if check is not -1 and self.manual is False:
             self.tk.after(50, self.redraw)
         
     def draw_sonar_data(self):
         #print 'data'
-        for line in self.sonar.scan_lines:
-            draw_line(self.canvas, line, tag='scan')
+        #for line in self.sonar.scan_lines:
+            #draw_line(self.canvas, line, tag='scan')
         #for point in self.sonar.intersection_points:
             #draw_point(self.canvas, point, tag='intersect')
         for particle in self.sonar.particles:
@@ -56,7 +70,7 @@ def draw_point(canvas, point, weight=0, colour='black', tag=''):
     if weight == 0:
         canvas.create_oval(pt.x - 1, pt.y - 1, pt.x + 1, pt.y + 1, tags=tag, outline=colour)
     else:
-        canvas.create_oval(pt.x - weight*2, pt.y - weight*2, pt.x + weight*2, pt.y + weight*2, tags=tag, outline=colour)
+        canvas.create_oval(pt.x - weight*5, pt.y - weight*5, pt.x + weight*5, pt.y + weight*5, tags=tag, outline=colour)
 def draw_circle_from_centre(canvas, radius, centre):
     # probably the wrong way around, technically, but since it's a
     # circle it makes no difference really.

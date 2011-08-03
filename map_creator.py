@@ -62,14 +62,14 @@ def m1down(event):
     # close to another point (say within 5 units), then the point
     # added is the same as the one that is close.
     global mv_flag
-    if mv_flag:
+    if mv_flag: # Creates movement vectors and rotations
         if len(mv_points) is not len(rotations):
             rotations.extend([event.x, event.y])
             if len(mv_points) is not 0:
                 draw_move_point()
         else:
             mv_points.extend([event.x, event.y])
-    else:
+    else: # Creates lines for the map
         point_list.extend([event.x, event.y])
         if len(point_list) % 4 is 0:
             canvas.create_line(*point_list[-4:])
