@@ -66,7 +66,7 @@ class SonarMath:
         cs = cos(radians(angle))
         x = vector[0]*cs - vector[1]*sn + point.x + point.y*sn - point.x*cs
         y = vector[0]*sn + vector[1]*cs + point.y - point.x*sn - point.y*cs
-        print x, y
+        return (x,y)
 
     def gaussian(self, mu, sigma, x):
         p1 = 1/(sqrt(2*pi*pow(sigma,2)))
