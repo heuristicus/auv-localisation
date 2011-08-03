@@ -27,12 +27,13 @@ class SonarMath:
             return -1
         else:
             dist = intersect.distance(location)
+            return dist
             #print 'distance is %d'%(dist)
-            if minrange < dist < maxrange:
-                return dist
-            else:
+            #if minrange < dist < maxrange:
+             #   return dist
+            #else:
                 #print 'Distance not within tolerated range.'
-                return -1
+             #   return -1
 
     def get_scan_line(self, location, angle, length):
         pt = self.point_at_angle(location, angle, length)
@@ -55,6 +56,9 @@ class SonarMath:
         y = random.gauss(y, ysigma)
         return (x,y)
 
+    def get_move_vector(self, p1, p2):
+        return (p2.x - p1.x, p2.y - p1.y)
+
     def gaussian(self, mu, sigma, x):
         p1 = 1/(sqrt(2*pi*pow(sigma,2)))
         p2 = pow(e, ((-1*pow((x-mu),2)))/2.0*pow(sigma,2))
@@ -62,4 +66,5 @@ class SonarMath:
 
 if __name__ == '__main__':
     a = SonarMath()
+    print a.get_move_vector(Point(10,10), Point(5,5))
     print a.gaussian(2,1,2)

@@ -30,12 +30,17 @@ class MoveList:
     def previous(self):
         self.pointer -= 1
         return self.current()
-
+    
+    def get_previous(self):
+        return self.movelist[self.pointer - 1]
+    
     def first(self):
         return self.movelist[0]
 
     def current(self):
         try:
+            if self.pointer < 0:
+                raise IndexError
             return self.movelist[self.pointer]
         except IndexError:
             print 'Either the start or end of the list has been reached.'

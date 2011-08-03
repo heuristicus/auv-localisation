@@ -36,7 +36,6 @@ class sonar:
         self.ranges = []
         self.scan_lines = []
         self.intersection_points = []
-        self.particles = [] # THIS NEEDS TO BE CHANGED LATER!
         self.current_angle = self.initial_angle
 
     def get_move_list(self):
@@ -58,21 +57,24 @@ class sonar:
 
     def sim_step(self):
         next = self.move_list.next()
+        current = self.loc
         if next is -1:
-            return -1
+            return -1 # no more steps in list
         else:
+            if not self.particles:
+                self.generate_particles(10)
             self.move_to(next[0], next[1])
             self.get_ranges()
             self.math.apply_range_noise(self.ranges, 0.5)
-            self.generate_particles(10)
-            #print 'comparing ranges'
+            move_vector = self.math.get_move_vector(current, next[0])
             p_cp = []
             for particle in self.particles:
+                particle.move(move_vector)
                 particle.get_ranges()
                 p_cp.append(self.compare_ranges(particle))
                # print '---------------------'
             print p_cp
-            return 1
+            return 1 # steps remain in list
 
     def compare_ranges(self, particle):
         prob_sum = 0
@@ -117,7 +119,7 @@ class sonar:
     def generate_particles(self, number):
         for i in range(number):
             self.particles.append(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, 10, 10)), self))
-        
+                
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])
     mvlist = move_list.MoveList()

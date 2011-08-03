@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import s_math
+from shapely.geometry import Point
 
 class Particle:
     
@@ -16,9 +17,11 @@ class Particle:
         self.math = s_math.SonarMath()
 
     def get_ranges(self):
+        self.current_angle = self.initial_angle
         self.ranges = []
         # loop might not work for certain step numbers?
         #for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
+        #print self.step, self.initial_angle, self.current_angle
         for i in range(360/self.step):
             if self.current_angle > self.initial_angle + self.angle_range:
                 break
@@ -29,4 +32,6 @@ class Particle:
             self.current_angle += self.step
 
     def move(self, vector):
-        n_vec = self.math.apply_point_noise(vector[0], vector[1])
+        n_vec = self.math.apply_point_noise(vector[0], vector[1], 0.5, 0.5)
+        a = Point(n_vec[0] + self.loc.x, n_vec[1] + self.loc.y)
+        self.loc = a
