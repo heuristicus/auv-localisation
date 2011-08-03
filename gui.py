@@ -38,18 +38,25 @@ class gui:
             self.canvas.delete('particle')
             
         self.draw_sonar_data()
+        self.draw_particle_data()
         if check is not -1 and self.manual is False:
             self.tk.after(50, self.redraw)
         
     def draw_sonar_data(self):
         #print 'data'
-        #for line in self.sonar.scan_lines:
-            #draw_line(self.canvas, line, tag='scan')
+        for line in self.sonar.scan_lines:
+            draw_line(self.canvas, line, tag='scan')
         #for point in self.sonar.intersection_points:
             #draw_point(self.canvas, point, tag='intersect')
+        draw_point(self.canvas, self.sonar.loc, tag='sonar', colour='red')
+
+    def draw_particle_data(self):
         for particle in self.sonar.particles:
             draw_point(self.canvas, particle.loc, weight=particle.wt, tag='particle')
-        draw_point(self.canvas, self.sonar.loc, tag='sonar', colour='red')
+            for line in particle.scan:
+                draw_line(self.canvas, line, tag='scan')
+            for intersect in particle.int:
+                draw_point(self.canvas, intersect, tag='intersect')
         
     def draw_map(self):
         #print 'map'

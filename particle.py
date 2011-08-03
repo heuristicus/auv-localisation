@@ -7,6 +7,8 @@ class Particle:
     def __init__(self, loc, sonar, wt=0):
         self.loc = loc
         self.wt = wt
+        self.scan = []
+        self.int = []
         self.map = sonar.map
         self.maxrange = sonar.max_range
         self.minrange = sonar.min_range
@@ -17,6 +19,8 @@ class Particle:
         self.math = s_math.SonarMath()
 
     def get_ranges(self):
+        self.scan = []
+        self.int = []
         self.current_angle = self.initial_angle
         self.ranges = []
         # loop might not work for certain step numbers?
@@ -28,6 +32,8 @@ class Particle:
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.maxrange)
             intersect = self.math.get_intersect_point(self.loc, ln, self.map)
             dist = self.math.intersect_distance(self.loc, intersect, self.minrange, self.maxrange,)
+            self.scan.append(ln)
+            self.int.append(intersect)
             self.ranges.append(dist)
             self.current_angle += self.step
 
