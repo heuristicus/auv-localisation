@@ -62,29 +62,26 @@ class sonar:
             return -1 # no more steps in list
         else:
             if not self.particles.list():
-                self.first = True
                 self.generate_particles(10)
-            if not self.first:
+                self.get_ranges()
+                p_cp = []
+                for particle in self.particles.list():
+                    particle.get_ranges()
+                    p_cp.append(self.compare_ranges(particle))
+                print self.loc, self.particles.best_particle().loc
+            else:
+                print self.loc, self.particles.best_particle().loc
                 self.particles.resample()
-            self.move_to(next[0], next[1])
-            self.get_ranges()
-            self.math.apply_range_noise(self.ranges, 0.5)
-            move_vector = self.math.get_move_vector(current, next[0])
-            self.move_particles(move_vector)
-            
-            self.first = False
+                self.move_to(next[0], next[1])
+                self.get_ranges()
+                self.math.apply_range_noise(self.ranges, 0.5)
+                move_vector = self.math.get_move_vector(current, next[0])
+                p_cp = []
+                for particle in self.particles.list():
+                    particle.move(move_vector, self.initial_angle)
+                    particle.get_ranges()
+                    p_cp.append(self.compare_ranges(particle))
             return 1 # steps remain in list
-
-    def move_particles(self, vector):
-        p_cp = []
-        for particle in self.particles.list():
-            if not self.first:
-                particle.move(vector, self.initial_angle)
-            particle.get_ranges()
-            # print zip(self.ranges, particle.ranges)
-            p_cp.append(self.compare_ranges(particle))
-            # print '---------------------'
-        #print p_cp
 
     def compare_ranges(self, particle):
         prob_sum = 0

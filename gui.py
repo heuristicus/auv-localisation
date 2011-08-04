@@ -36,6 +36,7 @@ class gui:
             self.canvas.delete('scan')
             self.canvas.delete('intersect')
             self.canvas.delete('particle')
+            self.canvas.delete('mvln')
             
         self.draw_sonar_data()
         self.draw_particle_data()
@@ -56,7 +57,7 @@ class gui:
         for particle in particles:
             draw_point(self.canvas, particle.loc, weight=particle.wt, tag='particle')
             if particle.move_line:
-                draw_line(self.canvas, particle.move_line)
+                draw_line(self.canvas, particle.move_line, tag='mvln')
             #for line in particle.scan:
              #   draw_line(self.canvas, line, tag='scan')
             #for intersect in particle.int:
