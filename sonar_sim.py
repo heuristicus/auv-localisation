@@ -62,6 +62,7 @@ class sonar:
             return -1 # no more steps in list
         else:
             if not self.particles:
+                self.first = True
                 self.generate_particles(10)
             self.move_to(next[0], next[1])
             self.get_ranges()
@@ -69,12 +70,14 @@ class sonar:
             move_vector = self.math.get_move_vector(current, next[0])
             p_cp = []
             for particle in self.particles:
-                particle.move(move_vector, self.initial_angle)
+                if not self.first:
+                    particle.move(move_vector, self.initial_angle)
                 particle.get_ranges()
-                print zip(self.ranges, particle.ranges)
+                #print zip(self.ranges, particle.ranges)
                 p_cp.append(self.compare_ranges(particle))
                # print '---------------------'
-            print p_cp
+            #print p_cp
+            self.first = False
             return 1 # steps remain in list
 
     def compare_ranges(self, particle):
@@ -91,8 +94,6 @@ class sonar:
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
         and not an increment on the current rotation."""
-        print rotation
-
         self.loc = loc
         self.initial_angle = 315 - rotation #just a guess, works ok
 

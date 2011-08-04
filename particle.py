@@ -39,8 +39,12 @@ class Particle:
 
     def move(self, vector, angle):
         angle_noise = self.math.get_noise(0, 5)
-        vec = self.math.rotate_vector(self.loc, vector, angle_noise)
-        endpt = Point(vec[0] + self.loc.x, vec[1] + self.loc.y)
+        endpt = self.math.rotate_point(self.loc, vector, angle_noise)
         n_end = Point(self.math.apply_point_noise(endpt.x, endpt.y, 0.5, 0.5))
         self.initial_angle = angle + angle_noise
+        
+        last = self.loc
         self.loc = n_end
+        self.move_line = self.math.make_line(self.last, self.loc)
+        #print self.move_line.length
+        

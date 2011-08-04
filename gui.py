@@ -15,7 +15,7 @@ class gui:
         self.sonar = sonar
         self.draw_map()
         self.draw_move_points()
-        self.delete_old = False
+        self.delete_old = True
         #self.tk.after(20,self.redraw)
 
         self.tk.mainloop()
@@ -44,8 +44,9 @@ class gui:
         
     def draw_sonar_data(self):
         #print 'data'
-        for line in self.sonar.scan_lines:
-            draw_line(self.canvas, line, tag='scan')
+        #for line in self.sonar.scan_lines:
+            #draw_line(self.canvas, line, tag='scan')
+            
         #for point in self.sonar.intersection_points:
             #draw_point(self.canvas, point, tag='intersect')
         draw_point(self.canvas, self.sonar.loc, tag='sonar', colour='red')
@@ -53,8 +54,10 @@ class gui:
     def draw_particle_data(self):
         for particle in self.sonar.particles:
             draw_point(self.canvas, particle.loc, weight=particle.wt, tag='particle')
+        for particle in self.sonar.particles:
+            draw_line(self.canvas, particle.move_line)
             #for line in particle.scan:
-                #draw_line(self.canvas, line, tag='scan')
+             #   draw_line(self.canvas, line, tag='scan')
             #for intersect in particle.int:
                 #draw_point(self.canvas, intersect, tag='intersect')
         

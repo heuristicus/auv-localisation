@@ -27,11 +27,11 @@ class SonarMath:
             return -1
         else:
             dist = intersect.distance(location)
-            print 'distance is %d'%(dist)
+            #print 'distance is %d'%(dist)
             if minrange < dist < maxrange:
                 return dist
             else:
-                print 'Distance not within tolerated range.'
+                #print 'Distance not within tolerated range.'
                 return -1
 
     def get_scan_line(self, location, angle, length):
@@ -61,20 +61,28 @@ class SonarMath:
     def get_move_vector(self, p1, p2):
         return (p2.x - p1.x, p2.y - p1.y)
 
-    def rotate_vector(self, point, vector, angle):
+    def rotate_point(self, centre, vector, angle):
+        """Rotates the point at the end of the vector from the centre
+        point by a given angle around the given rotation centre."""
         sn = sin(radians(angle))
         cs = cos(radians(angle))
-        x = vector[0]*cs - vector[1]*sn + point.x + point.y*sn - point.x*cs
-        y = vector[0]*sn + vector[1]*cs + point.y - point.x*sn - point.y*cs
-        return (x,y)
+        pt = (centre.x + vector[0], centre.y + vector[1])
+        x = pt[0]*cs - pt[1]*sn + centre.x + centre.y*sn - centre.x*cs
+        y = pt[0]*sn + pt[1]*cs + centre.y - centre.x*sn - centre.y*cs
+        return Point(x,y)
 
     def gaussian(self, mu, sigma, x):
         p1 = 1/(sqrt(2*pi*pow(sigma,2)))
         p2 = pow(e, ((-1*pow((x-mu),2)))/2.0*pow(sigma,2))
         return p1*p2
 
+    def make_line(self, p1, p2):
+        return LineString([(p1.x, p1.y),(p2.x, p2.y)])
+
 if __name__ == '__main__':
     a = SonarMath()
+    for i in range(100):
+        print a.get_noise(0,5)
     #a.rotate_vector(Point(20,8), (40,80), -30)
     #print a.get_move_vector(Point(10,10), Point(5,5))
     #print a.gaussian(2,1,2)
