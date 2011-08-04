@@ -52,10 +52,12 @@ class gui:
         draw_point(self.canvas, self.sonar.loc, tag='sonar', colour='red')
 
     def draw_particle_data(self):
-        for particle in self.sonar.particles:
+        particles = self.sonar.particles.list()
+        for particle in particles:
+            print particle
             draw_point(self.canvas, particle.loc, weight=particle.wt, tag='particle')
-        for particle in self.sonar.particles:
-            draw_line(self.canvas, particle.move_line)
+            if particle.move_line:
+                draw_line(self.canvas, particle.move_line)
             #for line in particle.scan:
              #   draw_line(self.canvas, line, tag='scan')
             #for intersect in particle.int:

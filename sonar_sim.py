@@ -3,7 +3,7 @@ from math import sqrt, cos, sin, radians, acos, degrees, asin, atan2
 from Tkinter import Tk, Canvas
 from shapely import *
 from shapely.geometry import Point
-import random, map_rep, gui, sys, move_list, s_math, particle
+import random, map_rep, gui, sys, move_list, s_math, particle, particle_list
 
 global canvas
 
@@ -14,7 +14,7 @@ class sonar:
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
-        self.particles = []
+        self.particles =particle_list.ParticleList()
         self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = rng # Maximum range of the sonar pulse in cm
@@ -61,24 +61,31 @@ class sonar:
         if next is -1:
             return -1 # no more steps in list
         else:
-            if not self.particles:
+            if not self.particles.list():
                 self.first = True
                 self.generate_particles(10)
             self.move_to(next[0], next[1])
             self.get_ranges()
             self.math.apply_range_noise(self.ranges, 0.5)
             move_vector = self.math.get_move_vector(current, next[0])
-            p_cp = []
-            for particle in self.particles:
-                if not self.first:
-                    particle.move(move_vector, self.initial_angle)
-                particle.get_ranges()
-                #print zip(self.ranges, particle.ranges)
-                p_cp.append(self.compare_ranges(particle))
-               # print '---------------------'
-            #print p_cp
+            self.move_particles(move_vector)
+            self.resample()
             self.first = False
             return 1 # steps remain in list
+
+    def move_particles(self, vector):
+        p_cp = []
+        for particle in self.particles.list():
+            if not self.first:
+                particle.move(vector, self.initial_angle)
+            particle.get_ranges()
+            # print zip(self.ranges, particle.ranges)
+            p_cp.append(self.compare_ranges(particle))
+            # print '---------------------'
+        print p_cp
+
+    def resample(self):
+        print 'a'
 
     def compare_ranges(self, particle):
         prob_sum = 0
@@ -120,14 +127,14 @@ class sonar:
         
     def generate_particles(self, number):
         for i in range(number):
-            self.particles.append(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, 10, 10)), self))
+            self.particles.add(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, 10, 10)), self))
                 
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])
     mvlist = move_list.MoveList()
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
-    sonar = sonar(50, 25, simple_map, mvlist)
+    sonar = sonar(50, 15, simple_map, mvlist)
     #a = particle.Particle(sonar.loc, sonar)
     #a.get_ranges()
     ab = gui.gui(sonar)

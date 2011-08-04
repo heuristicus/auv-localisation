@@ -17,6 +17,7 @@ class Particle:
         self.angle_range = sonar.angle_range
         self.step = sonar.step
         self.math = s_math.SonarMath()
+        self.move_line = None
 
     def get_ranges(self):
         self.scan = []
@@ -45,6 +46,6 @@ class Particle:
         
         last = self.loc
         self.loc = n_end
-        self.move_line = self.math.make_line(self.last, self.loc)
-        #print self.move_line.length
+        self.move_line = self.math.make_line(last, self.loc)
+        
         
