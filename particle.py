@@ -6,6 +6,7 @@ class Particle:
     
     def __init__(self, loc, sonar, wt=0):
         self.loc = loc
+        self.sonar = sonar
         self.wt = wt
         self.scan = []
         self.int = []
@@ -47,5 +48,8 @@ class Particle:
         last = self.loc
         self.loc = n_end
         self.move_line = self.math.make_line(last, self.loc)
+
+    def copy(self):
+        return Particle(self.loc, self.sonar)
         
         

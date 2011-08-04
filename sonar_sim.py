@@ -64,13 +64,14 @@ class sonar:
             if not self.particles.list():
                 self.first = True
                 self.generate_particles(10)
+            if not self.first:
+                self.particles.resample()
             self.move_to(next[0], next[1])
             self.get_ranges()
             self.math.apply_range_noise(self.ranges, 0.5)
             move_vector = self.math.get_move_vector(current, next[0])
             self.move_particles(move_vector)
-            if not self.first:
-                self.particles.resample()
+            
             self.first = False
             return 1 # steps remain in list
 
