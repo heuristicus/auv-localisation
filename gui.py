@@ -54,7 +54,6 @@ class gui:
     def draw_particle_data(self):
         particles = self.sonar.particles.list()
         for particle in particles:
-            print particle
             draw_point(self.canvas, particle.loc, weight=particle.wt, tag='particle')
             if particle.move_line:
                 draw_line(self.canvas, particle.move_line)

@@ -14,7 +14,7 @@ class sonar:
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
-        self.particles =particle_list.ParticleList()
+        self.particles = particle_list.ParticleList(10)
         self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = rng # Maximum range of the sonar pulse in cm
@@ -69,7 +69,8 @@ class sonar:
             self.math.apply_range_noise(self.ranges, 0.5)
             move_vector = self.math.get_move_vector(current, next[0])
             self.move_particles(move_vector)
-            self.resample()
+            if not self.first:
+                self.particles.resample()
             self.first = False
             return 1 # steps remain in list
 
@@ -82,10 +83,7 @@ class sonar:
             # print zip(self.ranges, particle.ranges)
             p_cp.append(self.compare_ranges(particle))
             # print '---------------------'
-        print p_cp
-
-    def resample(self):
-        print 'a'
+        #print p_cp
 
     def compare_ranges(self, particle):
         prob_sum = 0
