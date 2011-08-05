@@ -14,7 +14,7 @@ class sonar:
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
-        self.particles = particle_list.ParticleList(10)
+        self.particles = particle_list.ParticleList(50)
         self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = rng # Maximum range of the sonar pulse in cm
@@ -56,39 +56,48 @@ class sonar:
             print 'Cannot %s to value %d. Length of list is %d, current pointer is %s'%('increment' if step is 'inc' else 'jump', val,  len(self.move_points), self.current_point)
 
     def sim_step(self):
+        """Moves the simulation into the next step."""
         next = self.move_list.next()
         current = self.loc
         if next is -1:
             return -1 # no more steps in list
         else:
-            if not self.particles.list():
-                self.generate_particles(10)
-                self.get_ranges()
-                p_cp = []
-                for particle in self.particles.list():
-                    particle.get_ranges()
-                    p_cp.append(self.compare_ranges(particle))
-                print self.loc, self.particles.best_particle().loc
-            else:
-                print self.loc, self.particles.best_particle().loc
-                self.particles.resample()
-                self.move_to(next[0], next[1])
-                self.get_ranges()
-                self.math.apply_range_noise(self.ranges, 0.5)
-                move_vector = self.math.get_move_vector(current, next[0])
-                p_cp = []
-                for particle in self.particles.list():
-                    particle.move(move_vector, self.initial_angle)
-                    particle.get_ranges()
-                    p_cp.append(self.compare_ranges(particle))
+            self.generate_particles(5) # only if not already done
+            self.particles.resample() # only if particles exist and have weights
+            self.move_to(next[0], next[1]) # move sonar to its next position
+            self.get_ranges() # get sonar ranges
+            self.math.apply_range_noise(self.ranges, 0.5) # apply noise to the sonar ranges 
+            # get the vector required to move from the sonar's current
+            # point to the next point
+            move_vector = self.math.get_move_vector(current, next[0]) 
+            for particle in self.particles.list():
+                # move each particle along the vector, and set its
+                # scan start angle tothe sonar's. This method
+                # introduces noise into both of those measurements.
+                particle.move(move_vector, self.initial_angle)
+                # get the ranges that the sonar would see if it were
+                # in the same position and orientation as the sonar
+                particle.get_ranges()
+                # weight each particle based on the variation of its
+                # range measurements with the measurements received
+                # from the sonar.
+                self.weight_particle(particle)
             return 1 # steps remain in list
 
-    def compare_ranges(self, particle):
+    def weight_particle(self, particle):
+        """Weights the given particle according to the difference
+        between its ranges tand the ranges detected by the sonar."""
         prob_sum = 0
         for i in range(len(particle.ranges)):
+            # Sonar returns -1 if the range received is not in the
+            # tolerated range. In this case, the measurement is not
+            # reliable, so only give a small weight increase.
             if self.ranges[i] is -1 and particle.ranges[i] is -1:
                 prob_sum += 0.03
             else:
+                # Calculate the probability of the particle range
+                # measurement given that the sonar range measurement
+                # might have a certain amount of noise
                 prob_sum += self.math.gaussian(self.ranges[i], 0.5, particle.ranges[i])
         particle.wt = prob_sum
         return prob_sum
@@ -101,29 +110,44 @@ class sonar:
         self.initial_angle = 315 - rotation #just a guess, works ok
 
     def move_to_random(self, height, width):
+        """Moves the sonar to a random position within a height x
+        width rectangle."""
         self.move_to(Point(random.randint(0, width), random.randint(0, height)), random.randint(0,360))
 
     def move_to_random_bounded(self, height, width, bound):
+        """Moves to a random location within a height x width
+        rectangle, but within a bounded range of its current
+        location"""
         self.move_to(Point(random.randint(self.loc.x - bound, self.loc.x + bound), random.randint(self.loc.y - bound, self.loc.y + bound)), random.randint(self.initial_angle - bound, self.initial_angle - bound))
         
     def get_ranges(self):
-        self.reset()
-        # loop might not work for certain step numbers?
-        #for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
-        for i in range(360/self.step):
+        """Get the ranges that the sonar would receive at its current
+        map position if its sensors were perfect."""
+        self.reset() # reset arrays containing scan lines, ranges etc. 
+        for i in range(360/self.step): # loop over the total number of measurements to take
             if self.current_angle > self.initial_angle + self.angle_range:
+                # The whole scan has been completed, just a second check.
                 break
+            # get the line from the sonar to the point of max range
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.max_range)
+            # get the intersection point with the scan line on the map
+            # that is closest to the current sonar location
             intersect = self.math.get_intersect_point(self.loc, ln, self.map)
+            # calculate the distance to the intersection point, with
+            # some parameters which limit the data to a certain range
             dist = self.math.intersect_distance(self.loc, intersect, self.min_range, self.max_range,)
-            self.ranges.append(dist)
+            self.ranges.append(dist) # store the calculated distance
+            # Store the other objects for drawing later if necessary
             self.scan_lines.append(ln)
             self.intersection_points.append(intersect)
-            self.current_angle += self.step
+            self.current_angle += self.step # increment the angle to the angle of the next measurement
         
     def generate_particles(self, number):
-        for i in range(number):
-            self.particles.add(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, 10, 10)), self))
+        """Create a number of particles."""
+        if not self.particles.list():
+            for i in range(number):
+                # Create a particle within a gaussian range of the current sonar location
+                self.particles.add(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, 10, 10)), self))
                 
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])
