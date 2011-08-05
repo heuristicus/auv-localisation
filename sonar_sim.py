@@ -9,7 +9,7 @@ global canvas
 
 class sonar:
 
-    def __init__(self, map_, move_list, rng=50, step=25, particle_number=5, ):
+    def __init__(self, map_, move_list, max_rng=50, min_rng=4, step=25, particle_number=5, out_file=None):
         print 'Sonar initialised.'
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
@@ -17,8 +17,8 @@ class sonar:
         self.particles = particle_list.ParticleList()
         self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
-        self.max_range = rng # Maximum range of the sonar pulse in cm
-        self.min_range = 4
+        self.max_range = max_rng # Maximum range of the sonar pulse in cm
+        self.min_range = min_rng
         self.step = step # Angle moved by the sonar head between each pulse
         self.angle_range = 270 # Total angle that the sonar sweeps through 
 
@@ -31,6 +31,7 @@ class sonar:
         self.initial_angle = start_point[1]
         self.current_angle = self.initial_angle
         self.num_particles = particle_number
+        self.file = out_file
         self.math = s_math.SonarMath()
 
     def reset(self):
@@ -42,6 +43,25 @@ class sonar:
     def get_move_list(self):
         return self.move_list.get_list()
 
+    def save_info(self):
+        try:
+            f = open(self.file, 'a')
+        except IOError:
+            return
+        f.write('t %s'%(str(self.move_list.pointer)))
+        f.write('sloc %s'%(str(self.loc)))
+        f.write('sang %s'%(str(self.initial_angle)))
+        f.write('plocs %s'%(str(self.particles.locs())))
+        f.write('pang %s'%(str(self.particles.angles())))
+        f.write('pwts %s'%(str(self.particles.weights())))
+        f.write('hwterr %s\n'%(str(self.get_localisation_error())))
+
+        f.close()
+
+    def get_localisation_error(self):
+        lsa = self.particles.best().loc
+        return (self.loc.x - lsa.x, self.loc.y - lsa.y)
+        
     def move_in_list(self, val, step='inc'):
         """Moves around in the movement sequence.  step can be either
         'inc' or 'jump'. inc will increment the current position by
@@ -83,6 +103,7 @@ class sonar:
                 # range measurements with the measurements received
                 # from the sonar.
                 self.weight_particle(particle)
+            print self.get_localisation_error()
             return 1 # steps remain in list
 
     def weight_particle(self, particle):

@@ -12,7 +12,7 @@ class ParticleList:
     def list(self):
         return self.particles
 
-    def best_particle(self):
+    def best(self):
         """Find the particle with the highest weight"""
         m = 0
         best = None
@@ -25,6 +25,12 @@ class ParticleList:
     def weights(self):
         """Get the weights for all particles in the list"""
         return [p.wt for p in self.particles]
+
+    def locs(self):
+        return [p.loc for p in self.particles]
+
+    def angles(self):
+        return [p.initial_angle for p in self.particles]
 
     def resample(self):
         """Resample the particles in the list probabilistically -
