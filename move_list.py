@@ -1,12 +1,13 @@
 #!/usr/bin/python
 from shapely.geometry import Point
-import sys
+import sys, s_math
 
 class MoveList:
     
     def __init__(self, movelist=[]):
         self.movelist = movelist
         self.pointer = -1
+        self.math = s_math.SonarMath()
 
     def __repr__(self):
         s = ''
@@ -22,6 +23,7 @@ class MoveList:
         for i in range(len(tmp)/3):
             ml.append([Point(tmp[i*3], tmp[i*3+1]), tmp[i*3+2]])
         self.movelist =  ml
+        #self.avg_move_length()
 
     def next(self):
         self.pointer += 1
@@ -48,8 +50,16 @@ class MoveList:
             
     def get_list(self):
         return self.movelist
-
+    
+    def avg_move_length(self):
+        pts = [x[0].coords[0] for x in self.movelist]
+        a = self.math.make_lines(pts)
+        self.lines = a
+        l = [line.length for line in self.lines]
+        return sum(l)/len(self.lines)
+ 
 if __name__ == '__main__':
     m = MoveList()
     m.read_from_file(sys.argv[1])
-    print m
+    m.avg_move_length()
+    #print m

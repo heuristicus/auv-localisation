@@ -71,6 +71,8 @@ class gui:
     def draw_move_points(self):
         for point in self.sonar.get_move_list():
             draw_point(self.canvas, point[0], tag='mvpt')
+        #for line in self.sonar.move_list.lines:
+            #draw_line(self.canvas, line)
 
 def draw_line(canvas, line, tag=''):
     c = line.coords

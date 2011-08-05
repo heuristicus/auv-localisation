@@ -83,7 +83,13 @@ class SonarMath:
 
     def make_line(self, p1, p2):
         """Make a line between the two points."""
-        return LineString([(p1.x, p1.y),(p2.x, p2.y)])
+        try:
+            return LineString([(p1.x, p1.y),(p2.x, p2.y)])
+        except AttributeError:
+            return LineString([(p1[0], p1[1]),(p2[0], p2[1])])
+
+    def make_lines(self, pt_list):
+        return map(self.make_line, pt_list[:-1], pt_list[1:])
 
 if __name__ == '__main__':
     a = SonarMath()

@@ -25,9 +25,6 @@ class Particle:
         self.int = []
         self.current_angle = self.initial_angle
         self.ranges = []
-        # loop might not work for certain step numbers?
-        #for i in [x * self.step for x in map(lambda x:x+1, range(360/self.step))]:
-        #print self.step, self.initial_angle, self.current_angle
         for i in range(360/self.step):
             if self.current_angle > self.initial_angle + self.angle_range:
                 break
@@ -40,8 +37,11 @@ class Particle:
             self.current_angle += self.step
 
     def move(self, vector, angle):
+        """Move the particle along a vector, and set its scan start angle. Introduces noise."""
         angle_noise = self.math.get_noise(0, 5)
+        # Rotate endpoint of the vector by the noisy angle
         endpt = self.math.rotate_point(self.loc, vector, angle_noise)
+        # Apply noise to the endpoint location
         n_end = Point(self.math.apply_point_noise(endpt.x, endpt.y, 0.5, 0.5))
         self.initial_angle = angle + angle_noise
         

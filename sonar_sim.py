@@ -9,12 +9,12 @@ global canvas
 
 class sonar:
 
-    def __init__(self, rng, step, map_, move_list):
+    def __init__(self, map_, move_list, rng=50, step=25, particle_number=5, ):
         print 'Sonar initialised.'
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
-        self.particles = particle_list.ParticleList(50)
+        self.particles = particle_list.ParticleList()
         self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = rng # Maximum range of the sonar pulse in cm
@@ -30,6 +30,7 @@ class sonar:
         self.loc = self.start_loc # Current location of the sonar in the map
         self.initial_angle = start_point[1]
         self.current_angle = self.initial_angle
+        self.num_particles = particle_number
         self.math = s_math.SonarMath()
 
     def reset(self):
@@ -62,7 +63,7 @@ class sonar:
         if next is -1:
             return -1 # no more steps in list
         else:
-            self.generate_particles(5) # only if not already done
+            self.generate_particles(self.num_particles) # only if not already done
             self.particles.resample() # only if particles exist and have weights
             self.move_to(next[0], next[1]) # move sonar to its next position
             self.get_ranges() # get sonar ranges
@@ -154,7 +155,9 @@ if __name__ == '__main__':
     mvlist = move_list.MoveList()
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
-    sonar = sonar(50, 15, simple_map, mvlist)
+    param = [simple_map, mvlist, 50, 15, 5]
+    sonar = sonar(*param)
+    #sonar = sonar(simple_map, mvlist, rng=50, step=15, particle_number=5)
     #a = particle.Particle(sonar.loc, sonar)
     #a.get_ranges()
     ab = gui.gui(sonar)
