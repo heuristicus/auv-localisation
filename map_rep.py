@@ -8,10 +8,10 @@ class map_:
     # origin in the x direction and 50cm from the origin in the y
     # direction.
 
-    def __init__(self, filename=''):
+    def __init__(self, fname=''):
         self.lines = []
-        if filename:
-            self.load_map_from_file(filename)
+        if fname:
+            self.load_map_from_file(fname)
     
     def __repr__(self):
         rep = ""

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from sonar_sim import sonar as snr, map_rep
+import map_rep
 from Tkinter import Tk, Canvas, Button
 
 class gui:

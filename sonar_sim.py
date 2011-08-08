@@ -40,7 +40,8 @@ class sonar:
         """Reads parameters from a file and saves them in a dictionary"""
         if not fname:
             self.ang_noise = 5
-            self.loc_ns = 10
+            self.loc_noise = 0.5
+            self.rng_noise = 0.5
         else:
             f = open(fname)
             s = f.read().split('\n')[:-1]
@@ -67,14 +68,14 @@ class sonar:
         except IOError:
             print 'no file'
             return
-        f.write('t %s\n'%(str(self.move_list.pointer)))
-        f.write('sloc %s\n'%(str(self.loc)))
-        f.write('sang %s\n'%(str(self.initial_angle)))
+        f.write('step %s\n'%(str(self.move_list.pointer)))
+        f.write('sonarloc %s\n'%(str(self.loc.coords[0])))
+        f.write('sonarangle %s\n'%(str(self.initial_angle)))
         f.write('bestloc %s\n'%(str(self.particles.best().loc.coords[0])))
         f.write('plocs %s\n'%(str(self.particles.locs())))
-        f.write('pang %s\n'%(str(self.particles.angles())))
-        f.write('pwts %s\n'%(str(self.particles.weights())))
-        f.write('hiwterr %s\n'%(str(self.get_localisation_error())))
+        f.write('pangles %s\n'%(str(self.particles.angles())))
+        f.write('pweights %s\n'%(str(self.particles.weights())))
+        f.write('highweighterror %s\n'%(str(self.get_localisation_error())))
 
         f.close()
 
@@ -211,7 +212,8 @@ if __name__ == '__main__':
     mvlist = move_list.MoveList()
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
-    param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 10, 'out_file': 'data.txt', 'param_file': 'params.txt'}
+    #param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 10, 'out_file': 'data.txt', 'param_file': 'params.txt'}
+    param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 10, 'out_file': 'data.txt'}
     sonar = sonar(**param)
     #sonar = sonar(simple_map, mvlist, rng=50, step=15, particle_number=5)
     #a = particle.Particle(sonar.loc, sonar)

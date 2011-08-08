@@ -11,11 +11,11 @@ class MoveList:
         if fname:
             self.read_from_file(fname)
 
-    def __repr__(self):
-        s = ''
-        for point in self.movelist:
-            s += 'Point: %s \nRotation: %s\n'%(str(point[0].coords[0]), str(point[1]))
-        return s[:-2] # crude way to get rid of last newline
+    #def __repr__(self):
+    #    s = ''
+    #    for point in self.movelist:
+    #        s += 'Point: %s \nRotation: %s\n'%(str(point[0].coords[0]), str(point[1]))
+    #    return s[:-2] # crude way to get rid of last newline
 
     def read_from_file(self, filename):
         tmp = []
@@ -52,6 +52,9 @@ class MoveList:
             
     def get_list(self):
         return self.movelist
+
+    def reset(self):
+        self.pointer = -1
     
     def avg_move_length(self):
         pts = [x[0].coords[0] for x in self.movelist]
@@ -64,4 +67,4 @@ if __name__ == '__main__':
     m = MoveList()
     m.read_from_file(sys.argv[1])
     m.avg_move_length()
-    #print m
+    print m
