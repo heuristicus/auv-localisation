@@ -99,7 +99,7 @@ class sonar:
     def sim_step(self):
         """Moves the simulation into the next step."""
         next = self.move_list.next()
-        current = self.loc
+        current = self.loc if self.first else self.move_list.get_previous()[0] # THIS IS PROBABLY NOT THE ACTUAL LOCATION OF THE SONAR - noise has been added!
         if next is -1:
             return -1 # no more steps in list
         else:
@@ -204,14 +204,14 @@ class sonar:
         if not self.particles.list():
             for i in range(number):
                 # Create a particle within a gaussian range of the current sonar location
-                self.particles.add(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, 10, 10)), self))
+                self.particles.add(particle.Particle(Point(self.math.apply_point_noise(self.loc.x, self.loc.y, self.loc_noise, self.loc_noise)), self))
                 
 if __name__ == '__main__':
     simple_map = map_rep.map_(sys.argv[1])
     mvlist = move_list.MoveList()
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
-    param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 5, 'out_file': 'data.txt', 'param_file': 'params.txt'}
+    param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 10, 'out_file': 'data.txt', 'param_file': 'params.txt'}
     sonar = sonar(**param)
     #sonar = sonar(simple_map, mvlist, rng=50, step=15, particle_number=5)
     #a = particle.Particle(sonar.loc, sonar)

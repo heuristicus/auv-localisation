@@ -4,6 +4,10 @@ from shapely.geometry import Point
 
 class Particle:
     
+
+    #### Need to fix the initialisation - do not rely on sonar. when
+    #### copying the particle take the values that the particle has,
+    #### not the current sonar parameters.
     def __init__(self, loc, sonar, wt=0):
         self.loc = loc
         self.sonar = sonar
@@ -35,14 +39,15 @@ class Particle:
             self.int.append(intersect)
             self.ranges.append(dist)
             self.current_angle += self.step
+        self.math.apply_range_noise(self.ranges, self.sonar.rng_noise)
 
     def move(self, vector, angle):
         """Move the particle along a vector, and set its scan start angle. Introduces noise."""
-        angle_noise = self.math.get_noise(0, 5)
+        angle_noise = self.math.get_noise(0, self.sonar.ang_noise)
         # Rotate endpoint of the vector by the noisy angle
         endpt = self.math.rotate_point(self.loc, vector, angle_noise)
         # Apply noise to the endpoint location
-        n_end = Point(self.math.apply_point_noise(endpt.x, endpt.y, 0.5, 0.5))
+        n_end = Point(self.math.apply_point_noise(endpt.x, endpt.y, self.sonar.loc_noise, self.sonar.loc_noise))
         self.initial_angle = angle + angle_noise
         
         last = self.loc
