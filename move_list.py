@@ -11,11 +11,11 @@ class MoveList:
         if fname:
             self.read_from_file(fname)
 
-    #def __repr__(self):
-    #    s = ''
-    #    for point in self.movelist:
-    #        s += 'Point: %s \nRotation: %s\n'%(str(point[0].coords[0]), str(point[1]))
-    #    return s[:-2] # crude way to get rid of last newline
+    def __repr__(self):
+        s = ''
+        for point in self.movelist:
+            s += 'Point: %s \nRotation: %s\n'%(str(point[0].coords[0]), str(point[1]))
+        return s[:-2] # crude way to get rid of last newline
 
     def read_from_file(self, filename):
         tmp = []

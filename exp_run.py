@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, map_rep, move_list, sonar_sim
+import sys, map_rep, move_list, sonar_sim, time
 
 
 def main():
@@ -18,12 +18,13 @@ def main():
     s7 = {'map_':m1, 'move_list':mv1, 'max_rng':50, 'step': 15, 'particle_number': 8, 'out_file': out}
     s8 = {'map_':m1, 'move_list':mv1, 'max_rng':50, 'step': 15, 'particle_number': 15, 'out_file': out}
     s9 = {'map_':m1, 'move_list':mv1, 'max_rng':50, 'step': 15, 'particle_number': 25, 'out_file': out}
-    srs = [s1]
-    testnum = 5
+    srs = [s1,s5]
+    testnum = 2
     
 
     for cfg in srs:
         f = open(out, 'a')
+        f.write('newconf\n')
         f.write('sonar_setup: ')
         for key in out_keys:
             f.write('%s: %s '%(key, cfg[key]))
@@ -31,11 +32,16 @@ def main():
         f.close()
         s = sonar_sim.sonar(**cfg)
         for i in range(testnum):
+            f = open(out, 'a')
+            f.write('newtest\n')
+            f.write('start: %s\n'%(time.time()))
+            f.close()
             while s.sim_step() is not -1:
                 continue
+            f = open(out, 'a')
+            f.write('end: %s\n'%(time.time()))
+            f.close()
             mv1.reset()
-        
-
-
+     
 if __name__ == '__main__':
     main()
