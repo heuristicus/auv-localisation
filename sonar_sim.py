@@ -9,8 +9,9 @@ global canvas
 
 class sonar:
 
-    def __init__(self, map_, move_list, max_rng=50, min_rng=4, step=25, particle_number=5, out_file=None):
+    def __init__(self, map_, move_list, max_rng=50, min_rng=4, step=25, particle_number=5, out_file=None, param_file=None):
         print 'Sonar initialised.'
+        self.read_params(param_file)
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
@@ -35,6 +36,22 @@ class sonar:
         self.math = s_math.SonarMath()
         self.first = True
 
+    def read_params(self, fname):
+        """Reads parameters from a file and saves them in a dictionary"""
+        if not fname:
+            self.ang_noise = 5
+            self.loc_ns = 10
+        else:
+            f = open(fname)
+            s = f.read().split('\n')[:-1]
+            params = {}
+            for param in s:
+                z = param.split(' = ')
+                params[z[0]] = float(z[1])
+            self.ang_noise = params.get('ang_ns')
+            self.loc_noise = params.get('loc_ns')
+            self.rng_noise = params.get('rng_ns')
+                                        
     def reset(self):
         self.ranges = []
         self.scan_lines = []
@@ -66,7 +83,7 @@ class sonar:
         return (self.loc.x - lsa.x, self.loc.y - lsa.y)
         
     def move_in_list(self, val, step='inc'):
-        """Moves around in the movement sequence.  step can be either
+        """Moves around in the movement sequence. step can be either
         'inc' or 'jump'. inc will increment the current position by
         the value provided (i.e negatives work), and jump will jump to
         a position.
@@ -91,7 +108,7 @@ class sonar:
             move_vector = self.math.get_move_vector(current, next[0])
             self.move_to_noisy(move_vector, next[1]) # move sonar to its next position
             self.get_ranges() # get sonar ranges
-            self.math.apply_range_noise(self.ranges, 0.5) # apply noise to the sonar ranges 
+            self.math.apply_range_noise(self.ranges, self.rng_noise) # apply noise to the sonar ranges 
             # get the vector required to move from the sonar's current
             # point to the next point
              
@@ -125,7 +142,7 @@ class sonar:
                 # Calculate the probability of the particle range
                 # measurement given that the sonar range measurement
                 # might have a certain amount of noise
-                prob_sum += self.math.gaussian(self.ranges[i], 0.5, particle.ranges[i])
+                prob_sum += self.math.gaussian(self.ranges[i], self.rng_noise, particle.ranges[i])
         particle.wt = prob_sum
         return prob_sum
                         
@@ -136,9 +153,9 @@ class sonar:
             self.move_to(vector, rotation)
             self.first = False
         else:
-            angle_noise = self.math.get_noise(0, 5)
+            angle_noise = self.math.get_noise(0, self.ang_noise)
             endpt = self.math.rotate_point(self.loc, vector, angle_noise)
-            self.loc = Point(self.math.apply_point_noise(endpt.x, endpt.y, 0.5, 0.5))
+            self.loc = Point(self.math.apply_point_noise(endpt.x, endpt.y, self.loc_noise, self.loc_noise))
             # apply gaussian noise to the rotation
             self.initial_angle = 315 - rotation + angle_noise
 
@@ -194,7 +211,7 @@ if __name__ == '__main__':
     mvlist = move_list.MoveList()
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
-    param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 5, 'out_file': 'data.txt'}
+    param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 5, 'out_file': 'data.txt', 'param_file': 'params.txt'}
     sonar = sonar(**param)
     #sonar = sonar(simple_map, mvlist, rng=50, step=15, particle_number=5)
     #a = particle.Particle(sonar.loc, sonar)
