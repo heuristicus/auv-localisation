@@ -88,12 +88,13 @@ class sonar:
         else:
             self.generate_particles(self.num_particles) # only if not already done
             self.particles.resample() # only if particles exist and have weights
-            self.move_to_noisy(next[0], next[1]) # move sonar to its next position
+            move_vector = self.math.get_move_vector(current, next[0])
+            self.move_to_noisy(move_vector, next[1]) # move sonar to its next position
             self.get_ranges() # get sonar ranges
             self.math.apply_range_noise(self.ranges, 0.5) # apply noise to the sonar ranges 
             # get the vector required to move from the sonar's current
             # point to the next point
-            move_vector = self.math.get_move_vector(current, next[0]) 
+             
             for particle in self.particles.list():
                 # move each particle along the vector, and set its
                 # scan start angle tothe sonar's. This method
@@ -128,22 +129,24 @@ class sonar:
         particle.wt = prob_sum
         return prob_sum
                         
-    def move_to_noisy(self, loc, rotation):
+    def move_to_noisy(self, vector, rotation):
         """Moves the sonar to the next point, with noise applied to
         the angle and point."""
         if self.first:
-            self.move_to(loc, rotation)
+            self.move_to(vector, rotation)
             self.first = False
         else:
-            self.loc = Point(self.math.apply_point_noise(loc.x, loc.y, 5, 5))
+            angle_noise = self.math.get_noise(0, 5)
+            endpt = self.math.rotate_point(self.loc, vector, angle_noise)
+            self.loc = Point(self.math.apply_point_noise(endpt.x, endpt.y, 0.5, 0.5))
             # apply gaussian noise to the rotation
-            self.initial_angle = 315 - rotation + self.math.get_noise(0, 5)
+            self.initial_angle = 315 - rotation + angle_noise
 
-    def move_to(self, loc, rotation):
+    def move_to(self, vector, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
         and not an increment on the current rotation."""
-        self.loc = loc
+        self.loc = Point(self.loc.x + vector[0], self.loc.y + vector[1])
         self.initial_angle = 315 - rotation #just a guess, works ok
 
     def move_to_random(self, height, width):
