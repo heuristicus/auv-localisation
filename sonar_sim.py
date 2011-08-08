@@ -33,6 +33,7 @@ class sonar:
         self.num_particles = particle_number
         self.file = out_file
         self.math = s_math.SonarMath()
+        self.first = True
 
     def reset(self):
         self.ranges = []
@@ -47,14 +48,16 @@ class sonar:
         try:
             f = open(self.file, 'a')
         except IOError:
+            print 'no file'
             return
-        f.write('t %s'%(str(self.move_list.pointer)))
-        f.write('sloc %s'%(str(self.loc)))
-        f.write('sang %s'%(str(self.initial_angle)))
-        f.write('plocs %s'%(str(self.particles.locs())))
-        f.write('pang %s'%(str(self.particles.angles())))
-        f.write('pwts %s'%(str(self.particles.weights())))
-        f.write('hwterr %s\n'%(str(self.get_localisation_error())))
+        f.write('t %s\n'%(str(self.move_list.pointer)))
+        f.write('sloc %s\n'%(str(self.loc)))
+        f.write('sang %s\n'%(str(self.initial_angle)))
+        f.write('bestloc %s\n'%(str(self.particles.best().loc.coords[0])))
+        f.write('plocs %s\n'%(str(self.particles.locs())))
+        f.write('pang %s\n'%(str(self.particles.angles())))
+        f.write('pwts %s\n'%(str(self.particles.weights())))
+        f.write('hiwterr %s\n'%(str(self.get_localisation_error())))
 
         f.close()
 
@@ -85,7 +88,7 @@ class sonar:
         else:
             self.generate_particles(self.num_particles) # only if not already done
             self.particles.resample() # only if particles exist and have weights
-            self.move_to(next[0], next[1]) # move sonar to its next position
+            self.move_to_noisy(next[0], next[1]) # move sonar to its next position
             self.get_ranges() # get sonar ranges
             self.math.apply_range_noise(self.ranges, 0.5) # apply noise to the sonar ranges 
             # get the vector required to move from the sonar's current
@@ -104,6 +107,7 @@ class sonar:
                 # from the sonar.
                 self.weight_particle(particle)
             print self.get_localisation_error()
+            self.save_info()
             return 1 # steps remain in list
 
     def weight_particle(self, particle):
@@ -124,6 +128,17 @@ class sonar:
         particle.wt = prob_sum
         return prob_sum
                         
+    def move_to_noisy(self, loc, rotation):
+        """Moves the sonar to the next point, with noise applied to
+        the angle and point."""
+        if self.first:
+            self.move_to(loc, rotation)
+            self.first = False
+        else:
+            self.loc = Point(self.math.apply_point_noise(loc.x, loc.y, 5, 5))
+            # apply gaussian noise to the rotation
+            self.initial_angle = 315 - rotation + self.math.get_noise(0, 5)
+
     def move_to(self, loc, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting
@@ -176,8 +191,8 @@ if __name__ == '__main__':
     mvlist = move_list.MoveList()
     mvlist.read_from_file(sys.argv[2])
     #mvlist = move_list.MoveList([Point(0,0)])
-    param = [simple_map, mvlist, 50, 15, 5]
-    sonar = sonar(*param)
+    param = {'map_':simple_map, 'move_list':mvlist, 'max_rng':50, 'step': 15, 'particle_number': 5, 'out_file': 'data.txt'}
+    sonar = sonar(**param)
     #sonar = sonar(simple_map, mvlist, rng=50, step=15, particle_number=5)
     #a = particle.Particle(sonar.loc, sonar)
     #a.get_ranges()

@@ -4,10 +4,12 @@ import sys, s_math
 
 class MoveList:
     
-    def __init__(self, movelist=[]):
+    def __init__(self, movelist=[], fname=''):
         self.movelist = movelist
         self.pointer = -1
         self.math = s_math.SonarMath()
+        if fname:
+            self.read_from_file(fname)
 
     def __repr__(self):
         s = ''

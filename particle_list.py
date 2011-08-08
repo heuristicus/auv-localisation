@@ -27,7 +27,7 @@ class ParticleList:
         return [p.wt for p in self.particles]
 
     def locs(self):
-        return [p.loc for p in self.particles]
+        return [p.loc.coords[0] for p in self.particles]
 
     def angles(self):
         return [p.initial_angle for p in self.particles]
