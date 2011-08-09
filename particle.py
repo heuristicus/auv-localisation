@@ -21,6 +21,7 @@ class Particle:
         self.current_angle = self.initial_angle
         self.angle_range = sonar.angle_range
         self.step = sonar.step
+        self.scan_number = self.angle_range/self.step
         self.math = s_math.SonarMath()
         self.move_line = None
 
@@ -29,9 +30,7 @@ class Particle:
         self.int = []
         self.current_angle = self.initial_angle
         self.ranges = []
-        for i in range(360/self.step):
-            if self.current_angle > self.initial_angle + self.angle_range:
-                break
+        for i in range(self.scan_number):
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.maxrange)
             intersect = self.math.get_intersect_point(self.loc, ln, self.map)
             dist = self.math.intersect_distance(self.loc, intersect, self.minrange, self.maxrange,)

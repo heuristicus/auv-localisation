@@ -22,7 +22,7 @@ class sonar:
         self.min_range = min_rng
         self.step = step # Angle moved by the sonar head between each pulse
         self.angle_range = 270 # Total angle that the sonar sweeps through 
-
+        self.scan_number = self.angle_range/self.step
         # Where the first pulse is directed from. Sonar initialised so
         # that the first pulse travels from -125, where up is 0.
         self.map = map_ # Map to use the sonar in
@@ -133,6 +133,11 @@ class sonar:
         """Weights the given particle according to the difference
         between its ranges tand the ranges detected by the sonar."""
         prob_sum = 0
+        if len(self.ranges) is not len(particle.ranges):
+            print 'ERROR - sonar and particles do not have the same number of ranges'
+            print self.ranges, len(self.ranges)
+            print '\n'
+            print particle.ranges, len(particle.ranges)
         for i in range(len(particle.ranges)):
             # Sonar returns -1 if the range received is not in the
             # tolerated range. In this case, the measurement is not
@@ -182,10 +187,7 @@ class sonar:
         """Get the ranges that the sonar would receive at its current
         map position if its sensors were perfect."""
         self.reset() # reset arrays containing scan lines, ranges etc. 
-        for i in range(360/self.step): # loop over the total number of measurements to take
-            if self.current_angle > self.initial_angle + self.angle_range:
-                # The whole scan has been completed, just a second check.
-                break
+        for i in range(self.scan_number): # loop over the total number of measurements to take
             # get the line from the sonar to the point of max range
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.max_range)
             # get the intersection point with the scan line on the map

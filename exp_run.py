@@ -25,21 +25,21 @@ def main():
     for cfg in srs:
         f = open(out, 'a')
         f.write('newconf\n')
-        f.write('sonar_setup: ')
         for key in out_keys:
-            f.write('%s: %s '%(key, cfg[key]))
+            f.write('%s:%s/'%(key, cfg[key]))
         f.write('\n')
         f.close()
         s = sonar_sim.sonar(**cfg)
         for i in range(testnum):
             f = open(out, 'a')
             f.write('newtest\n')
-            f.write('start: %s\n'%(time.time()))
+            f.write('----START----: %s\n'%(time.time()))
             f.close()
             while s.sim_step() is not -1:
                 continue
             f = open(out, 'a')
-            f.write('end: %s\n'%(time.time()))
+            f.write('step 99999\n')
+            f.write('----END----: %s\n'%(time.time()))
             f.close()
             mv1.reset()
      
