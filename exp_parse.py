@@ -36,19 +36,15 @@ def main():
         t_start = []
         t_step = []
         for item in test[1:]:
-            end = item[-1] if item[-1] is not '' else item[-2]
+            end = item[-1]
             t_end.append(end[0].split(' ')[1])
             start = item[0][1].split(' ')[1]
             t_start.append(start)
-            step = item[1]
+            step = item[1:-1]
             t_step.append(step)
         steps.append(t_step)
         ends.append(t_end)
         starts.append(t_start)
-    print steps
-    #print ends
-    #print starts
-    #print confs
-        
+            
 if __name__ == '__main__':
     main()
