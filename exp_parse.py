@@ -21,9 +21,12 @@ def main():
         tests.append(re.split('newtest\n', conf))
         splitsteps = []
     for test in tests:
-        test[1] = re.split('step \d+\n', test[1])
-        print test
-        print '\n\n'
+        for num in map(lambda x: x + 1, range(len(test[1:]))):
+            test[num] = re.split('step \d+\n', test[num])
+            for step in range(len(test[num])):
+                test[num][step] = test[num][step].split('\n')[:-1]
         
+    for test in tests[0]:
+        print test
 if __name__ == '__main__':
     main()
