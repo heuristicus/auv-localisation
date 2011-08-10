@@ -91,6 +91,39 @@ class SonarMath:
     def make_lines(self, pt_list):
         return map(self.make_line, pt_list[:-1], pt_list[1:])
 
+    def calc_mean_variance(self, point_list, weight_list):
+        wsum = sum(weight_list)
+        xmean = 0
+        ymean = 0
+        xvar = 0
+        yvar = 0
+        for i in range(len(point_list)):
+            xptwt = weight_list[i] * point_list[i][0]
+            yptwt = weight_list[i] * point_list[i][1]
+            xmean += xptwt
+            ymean += yptwt
+
+        xmean = xmean/wsum
+        ymean = ymean/wsum
+
+        for i in range(len(point_list)):
+            xptwt = weight_list[i] * point_list[i][0]
+            yptwt = weight_list[i] * point_list[i][1]
+            xvar += pow(xptwt-xmean, 2)
+            yvar += pow(yptwt-ymean, 2)
+            
+        xvar = xvar/xsum
+        yvar = yvar/wsum
+            
+        return [(xmean, ymean),(xvar, yvar)]
+
+    def variance(self,point_list, weight_list, mean):
+        wsum = sum(weight_list)
+        for i in range(len(point_list))
+
+    def mean(self, point_list, weight_list):
+        
+
 if __name__ == '__main__':
     a = SonarMath()
     for i in range(100):
