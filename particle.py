@@ -25,7 +25,7 @@ class Particle:
         self.math = s_math.SonarMath()
         self.move_line = None
 
-    def get_ranges(self):
+    def get_ranges(self, scale):
         self.scan = []
         self.int = []
         self.current_angle = self.initial_angle
@@ -34,6 +34,7 @@ class Particle:
             ln = self.math.get_scan_line(self.loc, self.current_angle, self.maxrange)
             intersect = self.math.get_intersect_point(self.loc, ln, self.map)
             dist = self.math.intersect_distance(self.loc, intersect, self.minrange, self.maxrange,)
+            dist = dist/scale # normalise the distance
             self.scan.append(ln)
             self.int.append(intersect)
             self.ranges.append(dist)

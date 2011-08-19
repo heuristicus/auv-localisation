@@ -26,6 +26,7 @@ class sonar:
         # Where the first pulse is directed from. Sonar initialised so
         # that the first pulse travels from -125, where up is 0.
         self.map = map_ # Map to use the sonar in
+        self.scale = self.map.scale
         start_point = move_list.first()
         self.start_loc = start_point[0] # Starting location of the sonar in the map
         self.loc = self.start_loc # Current location of the sonar in the map
@@ -120,7 +121,7 @@ class sonar:
                 particle.move(move_vector, self.initial_angle)
                 # get the ranges that the sonar would see if it were
                 # in the same position and orientation as the sonar
-                particle.get_ranges()
+                particle.get_ranges(self.scale)
                 # weight each particle based on the variation of its
                 # range measurements with the measurements received
                 # from the sonar.
