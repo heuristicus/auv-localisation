@@ -117,13 +117,6 @@ class SonarMath:
             
         return [(xmean, ymean),(xvar, yvar)]
 
-    def variance(self,point_list, weight_list, mean):
-        wsum = sum(weight_list)
-        for i in range(len(point_list))
-
-    def mean(self, point_list, weight_list):
-        
-
 if __name__ == '__main__':
     a = SonarMath()
     for i in range(100):

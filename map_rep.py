@@ -32,10 +32,9 @@ class map_:
     def load_map_from_file(self, filename):
         f = open(filename, 'r')
         s = f.read()
-        vals = map(int, s.split(' ')[:-1])
-        # Maybe move the sonar position from being defined on the map
-        # to being defined in the sequence of points to move along?
-        pt = vals
+        lines = s.split('\n')
+        self.scale = float(lines[0].split(' ')[0])
+        pt = [self.scale * float(x) for x in lines[1].split(' ')]
         for i in map(lambda x:x*4, range(len(pt)/4)):
             self.add_line(LineString([(pt[i], pt[i+1]),(pt[i+2], pt[i+3])]))
 
