@@ -27,6 +27,7 @@ class sonar:
         # that the first pulse travels from -125, where up is 0.
         self.map = map_ # Map to use the sonar in
         self.scale = self.map.scale
+
         start_point = move_list.first()
         self.start_loc = start_point[0] # Starting location of the sonar in the map
         self.loc = self.start_loc # Current location of the sonar in the map
@@ -35,6 +36,7 @@ class sonar:
         self.num_particles = particle_number
         self.file = out_file
         self.math = s_math.SonarMath()
+
         self.first = True
 
     def read_params(self, fname):
@@ -165,7 +167,7 @@ class sonar:
             self.loc = Point(self.math.apply_point_noise(endpt.x, endpt.y, self.loc_noise, self.loc_noise))
             # apply gaussian noise to the rotation
             self.initial_angle = 315 - rotation + angle_noise
-
+    
     def move_to(self, vector, rotation):
         """Moves the sonar to a specified location with the specified
         rotation applied. The rotation is assumed to be a new setting

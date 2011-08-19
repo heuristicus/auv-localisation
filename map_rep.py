@@ -2,7 +2,7 @@
 import sys
 from shapely.geometry import LineString
 
-class map_:
+class MapRep:
     # For the purposes of the simulation, each increment of 1 in the
     # coordinate space represents 10cm. i.e. (20,5) is 2m from the
     # origin in the x direction and 50cm from the origin in the y

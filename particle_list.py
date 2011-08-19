@@ -3,14 +3,28 @@ import random
 
 class ParticleList:
     
-    def __init__(self):
+    def __init__(self, particle_num):
+        self.max_p = particle_num
         self.particles = []
 
     def add(self, particle):
-        self.particles.append(particle)
+        if len(particles) < self.max_p:
+            self.particles.append(particle)
+            return True
+        else:
+            return False
         
     def list(self):
         return self.particles
+    
+    def initialised(self):
+        return True if self.particles else False
+
+    def max_particles(self):
+        return self.max_p
+
+    def cur_particles(self):
+        return len(self.particles)
 
     def best(self):
         """Find the particle with the highest weight"""
