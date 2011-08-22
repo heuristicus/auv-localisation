@@ -11,8 +11,9 @@ class Localiser:
         self.map = map_rep.MapRep(fname=mapfile)
         self.read_noise_params(fname=paramfile)
         self.math = s_math.SonarMath()
-        sonar_params['map_'] = mapfile
-        self.sonar = sonar.Sonar(**sonar_params)
+        if sonar_params['type'] is not 'hw':
+            sonar_params['map_'] = mapfile
+            self.sonar = sonar.Sonar(**sonar_params)
 
         self.create_subscribers()
 
@@ -94,5 +95,6 @@ class Localiser:
             self.rng_noise = params.get('rng_ns')
 
 if __name__ == '__main__':
-    s_param = {'max_rng':50, 'step': 15}
+    s_param = {'max_rng':50, 'step': 15, 'move_list': 'i.mv'}
+    s_param = {'type': 'hw'}
     l = Localiser(25, 'gisbert.map', s_param, paramfile='params.txt')
