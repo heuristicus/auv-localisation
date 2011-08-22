@@ -2,13 +2,13 @@
 
 class Sonar:
 
-    def __init__(self, map_, move_list, max_rng=50, min_rng=4, step=25, out_file=None, param_file=None):
+    def __init__(self, map_, max_rng=50, min_rng=4, step=25, out_file=None, param_file=None):
         print 'Sonar initialised.'
         self.read_params(param_file)
         self.ranges = [] # Distances to objects in the map on previous pulse
         self.scan_lines = []
         self.intersection_points = []
-        self.move_list = move_list # tuples containing a point location and angle of the sonar.
+        #self.move_list = move_list # tuples containing a point location and angle of the sonar.
         self.current_point = -1 # starts at a negative index, first point provided by map
         self.max_range = max_rng # Maximum range of the sonar pulse in cm
         self.min_range = min_rng
@@ -17,13 +17,14 @@ class Sonar:
         self.scan_number = self.angle_range/self.step
         # Where the first pulse is directed from. Sonar initialised so
         # that the first pulse travels from -125, where up is 0.
+        print map_
         self.map = map_ # Map to use the sonar in
         self.scale = self.map.scale
 
-        start_point = move_list.first()
-        self.start_loc = start_point[0] # Starting location of the sonar in the map
+        #start_point = move_list.first()
+        self.start_loc = start_point # Starting location of the sonar in the map
         self.loc = self.start_loc # Current location of the sonar in the map
-        self.initial_angle = start_point[1]
+        #self.initial_angle = start_point[1]
         self.current_angle = self.initial_angle
         self.file = out_file
         self.math = s_math.SonarMath()
