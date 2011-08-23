@@ -91,8 +91,8 @@ class SonarMath:
     def make_lines(self, pt_list):
         return map(self.make_line, pt_list[:-1], pt_list[1:])
 
-    def pt_dist(p1, p2):
-        return sqrt(pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1]))
+    def pt_dist(self, p1, p2):
+        return sqrt(pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2))
 
     def calc_mean_variance(self, point_list, weight_list):
         wsum = sum(weight_list)
